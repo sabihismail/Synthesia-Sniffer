@@ -60,7 +60,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Link>
-      <AdditionalDependencies>dbghelp.lib;$(SolutionDir)..\WindowsProcessMemoryReadWrite\Debug\WindowsProcessMemoryReadWrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
@@ -109,6 +109,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="libs\dbghelp.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WindowsProcessMemoryReadWrite\WindowsProcessMemoryReadWrite.vcxproj">
+      <Project>{0bba097e-4590-4c09-8812-532daa68e9a2}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

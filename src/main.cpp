@@ -3,8 +3,8 @@
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
-    SynthesiaSniffer w;
-    w.show();
-    return a.exec();
+    QApplication app(argc, argv);
+    SynthesiaSniffer window;
+    window.show();
+    return app.exec();
 }

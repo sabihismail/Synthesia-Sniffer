@@ -2,6 +2,7 @@
 
 #include <QtWidgets/QMainWindow>
 #include "ui_SynthesiaSniffer.h"
+#include "../sniffer/Sniffer.h"
 
 class SynthesiaSniffer : public QMainWindow
 {
@@ -12,4 +13,9 @@ public:
 
 private:
     Ui::SynthesiaSnifferClass ui;
+    Sniffer* sniffer = nullptr;
+    std::thread snifferThread;
+
+    void closeEvent(QCloseEvent* bar);
+    void SynthesiaSniffer::StartSniffer();
 };
