@@ -393,3 +393,6 @@ FodyWeavers.xsd
 *.exe
 *.out
 *.app
+
+!discord_game_sdk.dll
+!discord_game_sdk.dll.lib
