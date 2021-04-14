@@ -1,11 +1,14 @@
 #pragma once
 
-#include <QtWidgets/QMainWindow>
-#include <functional>
-#include <iostream>
 #include "ui_SynthesiaSniffer.h"
+#include "../util/Settings.h"
 #include "../sniffer/Sniffer.h"
 #include "../discord/DiscordRPC.h"
+#include "../util/VariableMessageBox.h"
+#include <functional>
+#include <iostream>
+#include <QtWidgets/QMainWindow>
+#include <QTranslator>
 
 class SynthesiaSniffer : public QMainWindow
 {
@@ -13,11 +16,12 @@ class SynthesiaSniffer : public QMainWindow
 
 public:
     SynthesiaSniffer(QWidget *parent = Q_NULLPTR);
+    Settings* settings = nullptr;
+    Sniffer* sniffer = nullptr;
+    DiscordRPC* discord = nullptr;
 
 private:
     Ui::SynthesiaSnifferClass ui;
-    Sniffer* sniffer = nullptr;
-    DiscordRPC* discord = nullptr;
     std::thread snifferThread;
 
     void closeEvent(QCloseEvent* bar);

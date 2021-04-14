@@ -88,6 +88,12 @@
     <ClCompile Include="src\util\Util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\util\Settings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\Logging.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\sniffer\Sniffer.h">
@@ -150,6 +156,18 @@
     <ClInclude Include="src\util\Util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\sniffer\SongInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\VariableMessageBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\Settings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\Logging.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="src\ui\SynthesiaSniffer.h">
@@ -160,5 +178,7 @@
     <None Include="libs\dbghelp.dll">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="README.md" />
+    <None Include=".gitignore" />
   </ItemGroup>
 </Project>

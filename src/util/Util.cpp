@@ -1,5 +1,116 @@
 #include "Util.h"
 
+std::map<std::string, std::string> Util::ParseStringByFormat(std::string& str, std::string& format)
+{
+	std::vector<std::string> splt;
+	std::vector<std::string> params;
+	std::string tmpStr;
+	int varHit = 0;
+	for (char c : format)
+	{
+		if (c == '$')
+		{
+			if (!tmpStr.empty())
+			{
+				splt.push_back(std::string(tmpStr));
+
+				tmpStr.clear();
+			}
+
+			varHit = 1;
+		}
+
+		if (c == ' ' && varHit)
+		{
+			auto s = std::string(tmpStr);
+
+			if (tmpStr[0] == '$')
+			{
+				params.push_back(s.substr(1));
+			}
+
+			splt.push_back(s);
+
+			tmpStr.clear();
+			varHit = 0;
+		}
+
+		tmpStr += c;
+	}
+
+	if (tmpStr[0] == '$')
+	{
+		params.push_back(tmpStr.substr(1));
+	}
+
+	if (!tmpStr.empty())
+	{
+		splt.push_back(tmpStr);
+
+		tmpStr.clear();
+	}
+
+	std::string regexStr;
+	for (std::string s : splt)
+	{
+		if (s[0] == '$')
+		{
+			regexStr += "(.*)";
+		}
+		else
+		{
+			regexStr += s;
+		}
+	}
+
+	std::regex regex(regexStr);
+	std::smatch matches;
+
+	if (!std::regex_search(str, matches, regex))
+	{
+		throw new std::exception("Invalid format.");
+	}
+
+	std::map<std::string, std::string> mapping;
+	for (size_t i = 1; i < matches.size(); i++)
+	{
+		std::string param = params[i - 1];
+
+		if (param == "$?")
+		{
+			continue;
+		}
+
+		std::string match = matches[i].str();
+
+		mapping[param] = match;
+	}
+
+	return mapping;
+}
+
+std::string Util::ReplaceAllString(std::string subject, const std::string& search, const std::string& replace)
+{
+	size_t pos = 0;
+
+	while ((pos = subject.find(search, pos)) != std::string::npos) {
+		subject.replace(pos, search.length(), replace);
+		pos += replace.length();
+	}
+
+	return subject;
+}
+
+void Util::ReplaceAllStringInPlace(std::string& subject, const std::string& search, const std::string& replace)
+{
+	size_t pos = 0;
+
+	while ((pos = subject.find(search, pos)) != std::string::npos) {
+		subject.replace(pos, search.length(), replace);
+		pos += replace.length();
+	}
+}
+
 int Util::IsNumber(std::string& str)
 {
 	return !str.empty() && std::all_of(str.begin(), str.end(), ::isdigit);
@@ -25,6 +136,16 @@ int Util::SafeStringToInt(char* arr, int length, int assumption)
 	}
 
 	return SafeStringToInt(std::string(arr), assumption);
+}
+
+uint32_t Util::SafeStringToUInt32(std::string& str, int assumption)
+{
+	if (IsNumber(str))
+	{
+		return static_cast<uint32_t>(std::stoul(str));
+	}
+
+	return assumption;
 }
 
 uint64_t Util::SafeStringToUInt64(std::string& str, int assumption)

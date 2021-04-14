@@ -67,6 +67,7 @@
     </Link>
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)..\WindowsProcessMemoryReadWrite\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <PostBuildEvent>
       <Command>
@@ -83,6 +84,7 @@
     </Link>
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)..\WindowsProcessMemoryReadWrite\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <PreBuildEvent>
       <Command>xcopy /y /d "$(SolutionDir)libs\discord_sdk\discord_game_sdk.dll" "$(OutDir)"</Command>
@@ -133,6 +135,8 @@
     <ClCompile Include="libs\discord_sdk\include\types.cpp" />
     <ClCompile Include="libs\discord_sdk\include\user_manager.cpp" />
     <ClCompile Include="libs\discord_sdk\include\voice_manager.cpp" />
+    <ClCompile Include="src\util\Logging.cpp" />
+    <ClCompile Include="src\util\Settings.cpp" />
     <ClCompile Include="src\discord\DiscordRPC.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\sniffer\Sniffer.cpp" />
@@ -157,13 +161,19 @@
     <ClInclude Include="libs\discord_sdk\include\types.h" />
     <ClInclude Include="libs\discord_sdk\include\user_manager.h" />
     <ClInclude Include="libs\discord_sdk\include\voice_manager.h" />
+    <ClInclude Include="src\util\Logging.h" />
+    <ClInclude Include="src\util\Settings.h" />
+    <ClInclude Include="src\util\VariableMessageBox.h" />
     <ClInclude Include="src\discord\DiscordRPC.h" />
     <ClInclude Include="src\sniffer\Sniffer.h" />
+    <ClInclude Include="src\sniffer\SongInfo.h" />
     <ClInclude Include="src\util\Util.h" />
     <QtMoc Include="src\ui\SynthesiaSniffer.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include=".gitignore" />
     <None Include="libs\dbghelp.dll" />
+    <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WindowsProcessMemoryReadWrite\WindowsProcessMemoryReadWrite.vcxproj">

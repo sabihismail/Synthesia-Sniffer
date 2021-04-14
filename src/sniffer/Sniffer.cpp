@@ -12,8 +12,9 @@ std::vector<std::tuple<int, int>> SYNTHESIA_VERSION_ADDRESSES
     { 0x376C30, 0x376C38 }
 };
 
-Sniffer::Sniffer()
+Sniffer::Sniffer(Settings* settings)
 {
+    this->settings = settings;
 }
 
 void Sniffer::Init()
@@ -34,6 +35,11 @@ void Sniffer::Init()
 
         CheckVersion();
 
+        while (synthesiaVersion.version.empty())
+        {
+            Sleep(100);
+        }
+
         while (process.StillAlive() && running)
         {
             int success = GetCurrentInformation(process);
@@ -42,9 +48,9 @@ void Sniffer::Init()
             {
                 FormatSongInfo(process);
 
-                for (std::function<void(SongInfo*)> callback : callbacks)
+                for (std::function<void(ParsedSongInfo&)> callback : callbacks)
                 {
-                    callback(&songInfo);
+                    callback(songInfo);
                 }
             }
 
@@ -53,12 +59,17 @@ void Sniffer::Init()
     }
 }
 
-void Sniffer::OnUpdate(std::function<void(SongInfo*)> callback)
+void Sniffer::OnUpdate(std::function<void(ParsedSongInfo&)> callback)
 {
     callbacks.push_back(callback);
 }
 
-void Sniffer::FormatSongInfo(PEProcess process)
+void Sniffer::OnGUIRequest(std::function<void(VariableMessageBox&)> callback)
+{
+    guiRequestCallback = callback;
+}
+
+void Sniffer::FormatSongInfo(PEProcess& process)
 {
     std::string songFilePath = process.ReadMemoryString(songInfoTemp.songInfoRead.addressToSongFilePath, MAX_PATH * 2);
 
@@ -66,9 +77,37 @@ void Sniffer::FormatSongInfo(PEProcess process)
     songInfo.errors = songInfoTemp.songInfoRead.errors;
     songInfo.songPlayCount = songInfoTemp.songInfoRead.songPlayCount;
     songInfo.songFilePath = songFilePath;
+
+    songInfo.song = ParseSongName(songFilePath);
 }
 
-int Sniffer::GetCurrentInformation(PEProcess process)
+ParsedSongInfo::Song Sniffer::ParseSongName(std::string& file)
+{
+    std::string formatted = Util::ReplaceAllString(file, "\\", "/");
+
+    auto splt = Util::SplitString(formatted, '/', TRUE);
+    std::string filename = splt.at(splt.size() - 1);
+
+    auto mapping = Util::ParseStringByFormat(filename, settings->songFormat);
+
+    ParsedSongInfo::Song song{};
+
+    auto title = Util::SafeMapRetrieval(mapping, std::string("title"), std::string(""));
+    auto artist = Util::SafeMapRetrieval(mapping, std::string("artist"), std::string(""));
+
+    Util::ReplaceAllStringInPlace(artist, ".mid", "");
+    Util::ReplaceAllStringInPlace(artist, ".midi", "");
+
+    Util::ReplaceAllStringInPlace(title, ".mid", "");
+    Util::ReplaceAllStringInPlace(title, ".midi", "");
+
+    song.title = title;
+    song.artist = artist;
+
+    return song;
+}
+
+int Sniffer::GetCurrentInformation(PEProcess& process)
 {
     //std::string songFile = process.ReadMemoryStringFromAddress(0x004201F0, MAX_PATH * 2, TRUE);
 
@@ -77,55 +116,44 @@ int Sniffer::GetCurrentInformation(PEProcess process)
 
     LPVOID songInfoAddress = process.ReadMemoryAddress(0x0041EE34);
 
-    int result = process.ReadMemoryStruct(songInfoAddress, &songInfoTemp.songInfoRead, sizeof(SongInfoTemp::SongInfoRead));
-
-    if (!result)
-    {
-        return result;
-    }
+    songInfoTemp.songInfoRead = process.ReadMemoryStruct<MemorySongInfo::MemorySongInfoS1>(songInfoAddress);
 
     int totalTimeOffsets[] = { 0xA4, 0x0, 0xC4, 0x1B0, 0x0, 0x180 };
     LPVOID totalTimeAddress = process.ReadMemoryAddressChain(0x0041EE38, totalTimeOffsets, sizeof(totalTimeOffsets));
     std::string totalTime = process.ReadMemoryString(totalTimeAddress, 16, 364);
 
-    if (!Util::ValidString(totalTime))
+    if (Util::ValidString(totalTime))
     {
-        return 0;
+        songInfo.timeTotal = ConvertTimeToUInt64(totalTime);
     }
 
     int currentTimeOffsets[] = { 0xA4, 0x0, 0xD0, 0x168, 0x1CC, 0x84 };
     LPVOID currentTimeAddress = process.ReadMemoryAddressChain(0x0041EE38, currentTimeOffsets, sizeof(currentTimeOffsets));
     std::string currentTime = process.ReadMemoryString(currentTimeAddress, 16, 364);
 
-    if (!Util::ValidString(currentTime))
+    if (Util::ValidString(currentTime))
     {
-        return 0;
+        songInfo.timeCurrent = ConvertTimeToUInt64(currentTime);
     }
 
     /*int errorsOffsets[] = { 0xA4, 0x0, 0x10, 0x11C, 0x8, 0x184 };
     LPVOID errorsAddress = process.ReadMemoryAddressChain(0x0041EE38, errorsOffsets, sizeof(errorsOffsets));
     std::string errors = process.ReadMemoryString(errorsAddress, 16, 364);
 
-    if (!Util::ValidString(errors))
+    if (Util::ValidString(errors))
     {
-        return 0;
+        songInfo.errors = Util::SafeStringToInt(errors.substr(1));
     }*/
 
     int notesOffsets[] = { 0xA4, 0x0, 0xC4, 0x124, 0x19C, 0x180 };
     LPVOID notesAddress = process.ReadMemoryAddressChain(0x0041EE38, notesOffsets, sizeof(notesOffsets));
     std::string notes = process.ReadMemoryString(notesAddress, 16, 364);
 
-    if (!Util::ValidString(notes))
+    if (Util::ValidString(notes))
     {
-        return 0;
+        auto splt = Util::SplitString(notes, '/', TRUE);
+        songInfo.notesMax = Util::SafeStringToUInt32(splt.at(1));
     }
-
-    songInfo.timeTotal = ConvertTimeToUInt64(totalTime);
-    songInfo.timeCurrent = ConvertTimeToUInt64(currentTime);
-    //songInfo.errors = Util::SafeStringToInt(errors.substr(1));
-
-    auto splt = Util::SplitString(notes, '/', TRUE);
-    songInfo.notesMax = Util::SafeStringToInt(splt.at(1));
 
     return 1;
 }
@@ -177,11 +205,42 @@ void Sniffer::CheckVersion()
         }
     }
 
+    std::function<void()> proceed = [&]()
+    {
+        synthesiaVersion =
+        {
+            version,
+            revision
+        };
+
+        songInfo.synthesiaVersionInfo = "Synthesia v" + version + "/" + revision;
+    };
+
     if (!valid)
     {
-        QMessageBox::StandardButton button = QMessageBox::critical(window, "Error", 
-            "Sorry, SynthesiaSniffer doesn't support this version of Synthesia. Please make a request or update your Synthesia.", QMessageBox::Ok);
+        if (guiRequestCallback)
+        {
+            std::function<void()> cancel = [&]() 
+            {
+                exit(-1);
+            };
 
-        exit(-1);
+            VariableMessageBox obj
+            {
+                "Sorry, SynthesiaSniffer doesn't support this version of Synthesia. Please make a request or update your Synthesia.",
+                std::vector<const char*> { "Continue", "Exit" },
+                std::vector<std::function<void()>> { proceed, cancel }
+            };
+
+            guiRequestCallback(obj);
+        }
+        else
+        {
+            exit(-1);
+        }
+    }
+    else
+    {
+        proceed();
     }
 }

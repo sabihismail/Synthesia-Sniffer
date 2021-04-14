@@ -2,43 +2,22 @@
 
 #include "PEProcess.h"
 #include "../util/Util.h"
-#include <QMessageBox>
+#include "../util/Settings.h"
+#include "../util/VariableMessageBox.h"
+#include "./SongInfo.h"
 #include <QMainWindow>
+#include <QMessageBox>
+#include <qstring.h>
+#include <qabstractbutton.h>
 #include <thread>
+#include <functional>
+#include <iostream>
+#include <regex>
 
-struct SongInfoTemp
+struct SynthesiaVersion
 {
-	struct SongInfoRead
-	{
-		char unknown1[264];
-		uint64_t currentTimeLong;
-		uint32_t notesHit;
-		uint32_t errors;
-		char unknown2[144];
-		uint32_t songPlayCount;
-		char unknown3[104];
-		LPVOID addressToSongFilePath;
-		/*char unknown4[1068];
-		char songRunTime[14];
-		char unknown5[398];
-		char maxNotes[12];
-		char unknown6[2432];
-		char currentTime[16];
-		char unknown7[3248];
-		char songLength[16];*/
-	} songInfoRead;
-};
-
-
-struct SongInfo
-{
-	uint32_t notesHit;
-	uint32_t errors;
-	uint32_t songPlayCount;
-	std::string songFilePath;
-	uint32_t timeCurrent;
-	uint32_t timeTotal;
-	int notesMax;
+	std::string version;
+	std::string revision;
 };
 
 class Sniffer
@@ -46,22 +25,26 @@ class Sniffer
 public:
 	int running = 1;
 
-	Sniffer();
+	Sniffer(Settings* settings);
 	void Init();
-	void OnUpdate(std::function<void(SongInfo*)> callback);
+	void OnUpdate(std::function<void(ParsedSongInfo&)> callback);
+	void OnGUIRequest(std::function<void(VariableMessageBox&)> callback);
 
 private:
-	QMainWindow* window;
+	Settings* settings = nullptr;
 
+	SynthesiaVersion synthesiaVersion{};
 	std::string version;
 	std::string revision;
 
-	std::vector<std::function<void(SongInfo*)>> callbacks;
-	SongInfoTemp songInfoTemp{};
-	SongInfo songInfo{};
+	std::vector<std::function<void(ParsedSongInfo&)>> callbacks;
+	std::function<void(VariableMessageBox&)> guiRequestCallback;
+	MemorySongInfo songInfoTemp{};
+	ParsedSongInfo songInfo{};
 
 	void Sniffer::CheckVersion();
-	int Sniffer::GetCurrentInformation(PEProcess process);
-	void Sniffer::FormatSongInfo(PEProcess process);
+	int Sniffer::GetCurrentInformation(PEProcess& process);
+	void Sniffer::FormatSongInfo(PEProcess& process);
 	uint64_t Sniffer::ConvertTimeToUInt64(std::string& time);
+	ParsedSongInfo::Song Sniffer::ParseSongName(std::string& file);
 };
