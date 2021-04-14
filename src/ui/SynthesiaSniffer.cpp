@@ -4,7 +4,14 @@ SynthesiaSniffer::SynthesiaSniffer(QWidget *parent) : QMainWindow(parent)
 {
     ui.setupUi(this);
 
-    sniffer = new Sniffer(this);
+    discord = new DiscordRPC();
+    sniffer = new Sniffer();
+
+    sniffer->OnUpdate([](SongInfo* songInfo)
+        {
+
+        });
+
     snifferThread = std::thread(&SynthesiaSniffer::StartSniffer, this);
 }
 

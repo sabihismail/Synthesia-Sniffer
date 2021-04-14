@@ -60,13 +60,33 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Link>
-      <AdditionalDependencies>dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>dbghelp.lib;discord_game_sdk.dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreAllDefaultLibraries>
+      </IgnoreAllDefaultLibraries>
+      <AdditionalLibraryDirectories>$(SolutionDir)libs\discord_sdk;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)..\WindowsProcessMemoryReadWrite\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>xcopy /y /d "$(SolutionDir)libs\discord_sdk\discord_game_sdk.dll" "$(OutDir)"</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Link>
+      <AdditionalDependencies>dbghelp.lib;discord_game_sdk.dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)libs\discord_sdk;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\WindowsProcessMemoryReadWrite\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <PreBuildEvent>
+      <Command>xcopy /y /d "$(SolutionDir)libs\discord_sdk\discord_game_sdk.dll" "$(OutDir)"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'" Label="Configuration">
     <ClCompile>
@@ -99,12 +119,47 @@
     <QtUic Include="SynthesiaSniffer.ui" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="libs\discord_sdk\include\achievement_manager.cpp" />
+    <ClCompile Include="libs\discord_sdk\include\activity_manager.cpp" />
+    <ClCompile Include="libs\discord_sdk\include\application_manager.cpp" />
+    <ClCompile Include="libs\discord_sdk\include\core.cpp" />
+    <ClCompile Include="libs\discord_sdk\include\image_manager.cpp" />
+    <ClCompile Include="libs\discord_sdk\include\lobby_manager.cpp" />
+    <ClCompile Include="libs\discord_sdk\include\network_manager.cpp" />
+    <ClCompile Include="libs\discord_sdk\include\overlay_manager.cpp" />
+    <ClCompile Include="libs\discord_sdk\include\relationship_manager.cpp" />
+    <ClCompile Include="libs\discord_sdk\include\storage_manager.cpp" />
+    <ClCompile Include="libs\discord_sdk\include\store_manager.cpp" />
+    <ClCompile Include="libs\discord_sdk\include\types.cpp" />
+    <ClCompile Include="libs\discord_sdk\include\user_manager.cpp" />
+    <ClCompile Include="libs\discord_sdk\include\voice_manager.cpp" />
+    <ClCompile Include="src\discord\DiscordRPC.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\sniffer\Sniffer.cpp" />
     <ClCompile Include="src\ui\SynthesiaSniffer.cpp" />
+    <ClCompile Include="src\util\Util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="libs\discord_sdk\include\achievement_manager.h" />
+    <ClInclude Include="libs\discord_sdk\include\activity_manager.h" />
+    <ClInclude Include="libs\discord_sdk\include\application_manager.h" />
+    <ClInclude Include="libs\discord_sdk\include\core.h" />
+    <ClInclude Include="libs\discord_sdk\include\discord.h" />
+    <ClInclude Include="libs\discord_sdk\include\event.h" />
+    <ClInclude Include="libs\discord_sdk\include\ffi.h" />
+    <ClInclude Include="libs\discord_sdk\include\image_manager.h" />
+    <ClInclude Include="libs\discord_sdk\include\lobby_manager.h" />
+    <ClInclude Include="libs\discord_sdk\include\network_manager.h" />
+    <ClInclude Include="libs\discord_sdk\include\overlay_manager.h" />
+    <ClInclude Include="libs\discord_sdk\include\relationship_manager.h" />
+    <ClInclude Include="libs\discord_sdk\include\storage_manager.h" />
+    <ClInclude Include="libs\discord_sdk\include\store_manager.h" />
+    <ClInclude Include="libs\discord_sdk\include\types.h" />
+    <ClInclude Include="libs\discord_sdk\include\user_manager.h" />
+    <ClInclude Include="libs\discord_sdk\include\voice_manager.h" />
+    <ClInclude Include="src\discord\DiscordRPC.h" />
     <ClInclude Include="src\sniffer\Sniffer.h" />
+    <ClInclude Include="src\util\Util.h" />
     <QtMoc Include="src\ui\SynthesiaSniffer.h" />
   </ItemGroup>
   <ItemGroup>
