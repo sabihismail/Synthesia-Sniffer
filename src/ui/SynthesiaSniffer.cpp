@@ -1,21 +1,58 @@
 #include "SynthesiaSniffer.h"
 
-SynthesiaSniffer::SynthesiaSniffer(QWidget *parent) : QMainWindow(parent)
+SynthesiaSniffer::SynthesiaSniffer(QWidget* parent) : QMainWindow(parent)
 {
     ui.setupUi(this);
 
-    settings = new Settings();
-    discord = new DiscordRPC();
-    sniffer = new Sniffer(settings);
+    txtInfoLog = this->findChild<QTextEdit*>("txtInfoLog");
+    txtErrorLog = this->findChild<QTextEdit*>("txtErrorLog");
+    lblCurrentInfo = this->findChild<QLabel*>("lblCurrentInfo");
 
-    sniffer->OnUpdate([&](ParsedSongInfo& songInfo)
+    logger = new Logger();
+    settings = new Settings();
+    discord = new DiscordRPC(logger);
+    sniffer = new Sniffer(settings, logger);
+
+    logger->OnLog([this](LogType logType, std::string& str)
         {
-            discord->SetActivity(songInfo);
+            if (logType == LogType::LOG_DEBUG)
+            {
+                return;
+            }
+
+            QString qStr(str.c_str());
+            qStr += "\n";
+
+            QMetaObject::invokeMethod(this, [this, logType, qStr]
+                {
+                    QTextEdit* txt = txtInfoLog;
+
+                    if (logType == LogType::LOG_ERROR)
+                    {
+                        txt = txtErrorLog;
+                    }
+
+                    txt->moveCursor(QTextCursor::End);
+                    txt->insertPlainText(qStr);
+                    txt->moveCursor(QTextCursor::End);
+                }, Qt::QueuedConnection);
         });
 
-    sniffer->OnGUIRequest([&](VariableMessageBox& obj)
+    sniffer->OnUpdate([this](ParsedMemoryInfo& memoryInfo)
         {
-            QMetaObject::invokeMethod(this, [this, obj]
+            discord->SetActivity(memoryInfo);
+
+            QString qStr(memoryInfo.ToString().c_str());
+
+            QMetaObject::invokeMethod(this, [this, qStr]
+                {
+                    lblCurrentInfo->setText(qStr);
+                });
+        });
+
+    sniffer->OnGUIRequest([this](VariableMessageBox& obj)
+        {
+            QMetaObject::invokeMethod(this, [this, &obj]
                 {
                     QMessageBox msgBox(this);
                     msgBox.setText(tr(obj.msg));
@@ -39,12 +76,29 @@ SynthesiaSniffer::SynthesiaSniffer(QWidget *parent) : QMainWindow(parent)
 
 void SynthesiaSniffer::closeEvent(QCloseEvent *event)
 {
-    sniffer->running = 0;
+    try
+    {
+        snifferThread.detach();
 
-    snifferThread.detach();
+        delete sniffer;
+        delete discord;
+        delete settings;
+        delete logger;
+    }
+    catch (std::exception e)
+    {
+
+    }
 }
 
 void SynthesiaSniffer::StartSniffer()
 {
-    sniffer->Init();
+    try
+    {
+        sniffer->Init();
+    }
+    catch (std::exception e)
+    {
+        logger->LogException(e, this, nameof(StartSniffer));
+    }
 }

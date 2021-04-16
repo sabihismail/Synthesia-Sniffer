@@ -15,8 +15,5 @@ public:
 	std::string songFormat = "$? - $title - $artist";
 
 	Settings();
-
-private:
-
 };
 

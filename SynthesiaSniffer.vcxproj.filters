@@ -91,7 +91,7 @@
     <ClCompile Include="src\util\Settings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\util\Logging.cpp">
+    <ClCompile Include="src\util\Logger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -156,7 +156,7 @@
     <ClInclude Include="src\util\Util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\sniffer\SongInfo.h">
+    <ClInclude Include="src\sniffer\MemoryInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\util\VariableMessageBox.h">
@@ -165,7 +165,7 @@
     <ClInclude Include="src\util\Settings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\util\Logging.h">
+    <ClInclude Include="src\util\Logger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -180,5 +180,6 @@
     </None>
     <None Include="README.md" />
     <None Include=".gitignore" />
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

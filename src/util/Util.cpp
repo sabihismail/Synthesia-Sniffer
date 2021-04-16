@@ -93,7 +93,8 @@ std::string Util::ReplaceAllString(std::string subject, const std::string& searc
 {
 	size_t pos = 0;
 
-	while ((pos = subject.find(search, pos)) != std::string::npos) {
+	while ((pos = subject.find(search, pos)) != std::string::npos) 
+	{
 		subject.replace(pos, search.length(), replace);
 		pos += replace.length();
 	}
@@ -105,7 +106,8 @@ void Util::ReplaceAllStringInPlace(std::string& subject, const std::string& sear
 {
 	size_t pos = 0;
 
-	while ((pos = subject.find(search, pos)) != std::string::npos) {
+	while ((pos = subject.find(search, pos)) != std::string::npos) 
+	{
 		subject.replace(pos, search.length(), replace);
 		pos += replace.length();
 	}
@@ -181,7 +183,41 @@ int Util::ValidString(std::string& str)
 	return !str.empty();
 }
 
-std::vector<std::string> Util::SplitString(std::string& str, char delimiter, int toTrim)
+std::vector<std::string> Util::SplitString(std::string& str, std::string& delimiter, bool toTrim)
+{
+	std::string duplicated(str);
+
+	std::vector<std::string> lst;
+
+	size_t pos = 0;
+	while ((pos = duplicated.find(delimiter)) != std::string::npos)
+	{
+		std::string tmp = duplicated.substr(0, pos);
+
+		if (toTrim)
+		{
+			Trim(tmp);
+		}
+
+		lst.push_back(tmp);
+
+		duplicated.erase(0, pos + delimiter.length());
+	}
+
+	if (!duplicated.empty())
+	{
+		if (toTrim)
+		{
+			Trim(duplicated);
+		}
+
+		lst.push_back(duplicated);
+	}
+
+	return lst;
+}
+
+std::vector<std::string> Util::SplitString(std::string& str, char delimiter, bool toTrim)
 {
 	std::vector<std::string> lst;
 

@@ -12,9 +12,34 @@ std::vector<std::tuple<int, int>> SYNTHESIA_VERSION_ADDRESSES
     { 0x376C30, 0x376C38 }
 };
 
-Sniffer::Sniffer(Settings* settings)
+std::map<std::string, MenuType> MENU_MAPPING
+{
+    { "title", MenuType::MAIN_MENU },
+    { "library", MenuType::TRACK_SELECTION },
+    { "tracks", MenuType::GAME_MODE_SELECTION },
+    { "freeplay", MenuType::FREE_PLAY },
+};
+
+std::map<std::string, GameModeFlag> GAME_MODE_MAPPING
+{
+    { "Watch and Listen Only", GameModeFlag::WATCH_AND_LISTEN_ONLY },
+    { "Melody Practice", GameModeFlag::PRACTICE_THE_MELODY },
+    { "Rhythm Practice", GameModeFlag::PRACTICE_THE_RHYTHM },
+    { "Recital", GameModeFlag::SONG_RECITAL },
+    { "Right Hand", GameModeFlag::RIGHT_HAND },
+    { "Left Hand", GameModeFlag::LEFT_HAND },
+    { "Both Hands", GameModeFlag::RIGHT_HAND | GameModeFlag::LEFT_HAND },
+};
+
+Sniffer::Sniffer(Settings* settings, Logger* logger)
 {
     this->settings = settings;
+    this->logger = logger;
+}
+
+Sniffer::~Sniffer()
+{
+    running = 0;
 }
 
 void Sniffer::Init()
@@ -23,6 +48,8 @@ void Sniffer::Init()
     {
         PEProcess process = PEProcess::WaitForProcessAvailability(PROCESS_NAME, &running);
         process.SetModule(PROCESS_NAME);
+
+        logger->Log("Found process", this, LogType::LOG_DEBUG);
 
         for (std::tuple<int, int> address : SYNTHESIA_VERSION_ADDRESSES)
         {
@@ -35,6 +62,8 @@ void Sniffer::Init()
 
         CheckVersion();
 
+        logger->Log("Completed version check", this, LogType::LOG_DEBUG);
+
         while (synthesiaVersion.version.empty())
         {
             Sleep(100);
@@ -42,13 +71,17 @@ void Sniffer::Init()
 
         while (process.StillAlive() && running)
         {
+            memcpy(&oldSongInfo, &songInfo, sizeof(ParsedMemoryInfo));
+
             int success = GetCurrentInformation(process);
 
             if (success)
             {
                 FormatSongInfo(process);
 
-                for (std::function<void(ParsedSongInfo&)> callback : callbacks)
+                CompareMemoryInfoDifferences();
+
+                for (std::function<void(ParsedMemoryInfo&)> callback : callbacks)
                 {
                     callback(songInfo);
                 }
@@ -59,7 +92,7 @@ void Sniffer::Init()
     }
 }
 
-void Sniffer::OnUpdate(std::function<void(ParsedSongInfo&)> callback)
+void Sniffer::OnUpdate(std::function<void(ParsedMemoryInfo&)> callback)
 {
     callbacks.push_back(callback);
 }
@@ -67,6 +100,46 @@ void Sniffer::OnUpdate(std::function<void(ParsedSongInfo&)> callback)
 void Sniffer::OnGUIRequest(std::function<void(VariableMessageBox&)> callback)
 {
     guiRequestCallback = callback;
+}
+
+void Sniffer::CompareMemoryInfoDifferences()
+{
+    ParsedMemoryInfo* o = &oldSongInfo;
+    ParsedMemoryInfo* n = &songInfo;
+
+    if (n->gameModeStr.empty())
+    {
+        n->gameModeStr = o->gameModeStr;
+    }
+
+    if (n->gameMode == GameModeFlag::NONE && !(o->gameMode & GameModeFlag::NONE))
+    {
+        n->gameMode = o->gameMode;
+        n->gameModeStr = o->gameModeStr;
+    }
+
+    if (n->menuType == MenuType::IN_GAME)
+    {
+        n->gameMode = o->gameMode;
+        n->gameModeStr = o->gameModeStr;
+    }
+
+    if (n->menuType != o->menuType)
+    {
+        logger->LogDifference(nameof(songInfo->menuType), std::to_string(static_cast<int>(o->menuType)), std::to_string(static_cast<int>(n->menuType)));
+    }
+
+    if (n->gameMode != o->gameMode)
+    {
+        logger->LogDifference(nameof(songInfo->gameMode), static_cast<int>(o->gameMode), static_cast<int>(n->gameMode), true);
+    }
+
+    if (n->songFilePath != o->songFilePath)
+    {
+        logger->LogDifference(nameof(songInfo->songFilePath), o->songFilePath, n->songFilePath);
+        logger->LogDifference(nameof(songInfo->song.title), o->song.title, n->song.title);
+        logger->LogDifference(nameof(songInfo->song.artist), o->song.artist, n->song.artist);
+    }
 }
 
 void Sniffer::FormatSongInfo(PEProcess& process)
@@ -81,78 +154,134 @@ void Sniffer::FormatSongInfo(PEProcess& process)
     songInfo.song = ParseSongName(songFilePath);
 }
 
-ParsedSongInfo::Song Sniffer::ParseSongName(std::string& file)
+ParsedMemoryInfo::Song Sniffer::ParseSongName(std::string& file)
 {
-    std::string formatted = Util::ReplaceAllString(file, "\\", "/");
+    ParsedMemoryInfo::Song song{};
 
-    auto splt = Util::SplitString(formatted, '/', TRUE);
-    std::string filename = splt.at(splt.size() - 1);
+    try
+    {
+        std::string formatted = Util::ReplaceAllString(file, "\\", "/");
 
-    auto mapping = Util::ParseStringByFormat(filename, settings->songFormat);
+        auto splt = Util::SplitString(formatted, '/', true);
+        std::string filename = splt.at(splt.size() - 1);
 
-    ParsedSongInfo::Song song{};
+        auto mapping = Util::ParseStringByFormat(filename, settings->songFormat);
 
-    auto title = Util::SafeMapRetrieval(mapping, std::string("title"), std::string(""));
-    auto artist = Util::SafeMapRetrieval(mapping, std::string("artist"), std::string(""));
+        auto title = Util::SafeMapRetrieval(mapping, std::string("title"), std::string(""));
+        auto artist = Util::SafeMapRetrieval(mapping, std::string("artist"), std::string(""));
 
-    Util::ReplaceAllStringInPlace(artist, ".mid", "");
-    Util::ReplaceAllStringInPlace(artist, ".midi", "");
+        Util::ReplaceAllStringInPlace(artist, ".mid", "");
+        Util::ReplaceAllStringInPlace(artist, ".midi", "");
 
-    Util::ReplaceAllStringInPlace(title, ".mid", "");
-    Util::ReplaceAllStringInPlace(title, ".midi", "");
+        Util::ReplaceAllStringInPlace(title, ".mid", "");
+        Util::ReplaceAllStringInPlace(title, ".midi", "");
 
-    song.title = title;
-    song.artist = artist;
+        song.title = title;
+        song.artist = artist;
+    }
+    catch (std::exception e)
+    {
+        logger->LogException(e, this, nameof(StartSniffer));
+    }
 
     return song;
 }
 
 int Sniffer::GetCurrentInformation(PEProcess& process)
 {
-    //std::string songFile = process.ReadMemoryStringFromAddress(0x004201F0, MAX_PATH * 2, TRUE);
-
-    //int midiOffsets[] = { 0x0, 0x88, 0x0, 0x1C };
-    //LPVOID midiAddress = process.ReadMemoryAddressChain(0x0041EE34, midiOffsets, sizeof(midiOffsets));
-
-    LPVOID songInfoAddress = process.ReadMemoryAddress(0x0041EE34);
-
-    songInfoTemp.songInfoRead = process.ReadMemoryStruct<MemorySongInfo::MemorySongInfoS1>(songInfoAddress);
-
-    int totalTimeOffsets[] = { 0xA4, 0x0, 0xC4, 0x1B0, 0x0, 0x180 };
-    LPVOID totalTimeAddress = process.ReadMemoryAddressChain(0x0041EE38, totalTimeOffsets, sizeof(totalTimeOffsets));
-    std::string totalTime = process.ReadMemoryString(totalTimeAddress, 16, 364);
-
-    if (Util::ValidString(totalTime))
+    try 
     {
-        songInfo.timeTotal = ConvertTimeToUInt64(totalTime);
+        std::string menuAddress = process.ReadMemoryString(0x004203E8, 16);
+        if (Util::ValidString(menuAddress))
+        {
+            MenuType menuType = Util::SafeMapRetrieval(MENU_MAPPING, menuAddress, MenuType::UNKNOWN);
+
+            int songPausedOffsets[] = { 0xA4, 0x0, 0xD8, 0x64, 0x168, 0x168 };
+            LPVOID songPausedAddress = process.ReadMemoryAddressChain(0x0041EE38, songPausedOffsets, sizeof(songPausedOffsets));
+
+            if (songPausedAddress != 0x0)
+            {
+                std::string songPausedStr = process.ReadMemoryString(songPausedAddress, 12, nullptr, 280);
+
+                if (songPausedStr == "Song Paused")
+                {
+                    menuType = MenuType::IN_GAME;
+                }
+            }
+
+            GameModeFlag gameMode = GameModeFlag::NONE;
+            if (menuType == MenuType::GAME_MODE_SELECTION)
+            {
+                int gameModeOffsets[] = { 0xA4, 0x0, 0xA8, 0x128, 0x14, 0x118 };
+                LPVOID gameModeAddress = process.ReadMemoryAddressChain(0x0041EE38, gameModeOffsets, sizeof(gameModeOffsets));
+                std::string gameModeStr = process.ReadMemoryString(gameModeAddress, 32);
+                auto splt = Util::SplitString(gameModeStr, std::string(" • "), true);
+
+                for (size_t i = 0; i < splt.size(); i++) 
+                {
+                    GameModeFlag flag = Util::SafeMapRetrieval(GAME_MODE_MAPPING, splt[i], GameModeFlag::UNKNOWN);
+
+                    if (i == 0)
+                    {
+                        gameMode = flag;
+                    }
+                    else
+                    {
+                        gameMode |= flag;
+                    }
+
+                    if (flag == GameModeFlag::UNKNOWN)
+                    {
+                        std::string str = "Invalid parsing game mode " + gameModeStr + " - " + splt[i];
+
+                        logger->Log(str, nameof(GetCurrentInformation), LogType::LOG_ERROR);
+                    }
+                }
+
+                songInfo.gameModeStr = gameModeStr;
+            }
+
+            songInfo.menuType = menuType;
+            songInfo.gameMode = gameMode;
+        }
+
+        LPVOID songInfoAddress = process.ReadMemoryAddress(0x0041EE34);
+
+        songInfoTemp.songInfoRead = process.ReadMemoryStruct<MemoryInfoStructs::S1>(songInfoAddress);
+
+        int totalTimeOffsets[] = { 0xA4, 0x0, 0xC4, 0x1B0, 0x0, 0x180 };
+        LPVOID totalTimeAddress = process.ReadMemoryAddressChain(0x0041EE38, totalTimeOffsets, sizeof(totalTimeOffsets));
+        std::string totalTime = process.ReadMemoryString(totalTimeAddress, 16, nullptr, 364);
+
+        if (Util::ValidString(totalTime))
+        {
+            songInfo.timeTotal = ConvertTimeToUInt64(totalTime);
+        }
+
+        int currentTimeOffsets[] = { 0xA4, 0x0, 0xD0, 0x168, 0x1CC, 0x84 };
+        LPVOID currentTimeAddress = process.ReadMemoryAddressChain(0x0041EE38, currentTimeOffsets, sizeof(currentTimeOffsets));
+        std::string currentTime = process.ReadMemoryString(currentTimeAddress, 16, nullptr, 364);
+
+        if (Util::ValidString(currentTime))
+        {
+            songInfo.timeCurrent = ConvertTimeToUInt64(currentTime);
+        }
+
+        int notesOffsets[] = { 0xA4, 0x0, 0xC4, 0x124, 0x19C, 0x180 };
+        LPVOID notesAddress = process.ReadMemoryAddressChain(0x0041EE38, notesOffsets, sizeof(notesOffsets));
+        std::string notes = process.ReadMemoryString(notesAddress, 16, nullptr, 364);
+
+        if (Util::ValidString(notes))
+        {
+            auto splt = Util::SplitString(notes, '/', true);
+            songInfo.notesMax = Util::SafeStringToUInt32(splt.at(1));
+        }
     }
-
-    int currentTimeOffsets[] = { 0xA4, 0x0, 0xD0, 0x168, 0x1CC, 0x84 };
-    LPVOID currentTimeAddress = process.ReadMemoryAddressChain(0x0041EE38, currentTimeOffsets, sizeof(currentTimeOffsets));
-    std::string currentTime = process.ReadMemoryString(currentTimeAddress, 16, 364);
-
-    if (Util::ValidString(currentTime))
+    catch (std::exception e)
     {
-        songInfo.timeCurrent = ConvertTimeToUInt64(currentTime);
-    }
+        logger->LogException(e, this, nameof(StartSniffer));
 
-    /*int errorsOffsets[] = { 0xA4, 0x0, 0x10, 0x11C, 0x8, 0x184 };
-    LPVOID errorsAddress = process.ReadMemoryAddressChain(0x0041EE38, errorsOffsets, sizeof(errorsOffsets));
-    std::string errors = process.ReadMemoryString(errorsAddress, 16, 364);
-
-    if (Util::ValidString(errors))
-    {
-        songInfo.errors = Util::SafeStringToInt(errors.substr(1));
-    }*/
-
-    int notesOffsets[] = { 0xA4, 0x0, 0xC4, 0x124, 0x19C, 0x180 };
-    LPVOID notesAddress = process.ReadMemoryAddressChain(0x0041EE38, notesOffsets, sizeof(notesOffsets));
-    std::string notes = process.ReadMemoryString(notesAddress, 16, 364);
-
-    if (Util::ValidString(notes))
-    {
-        auto splt = Util::SplitString(notes, '/', TRUE);
-        songInfo.notesMax = Util::SafeStringToUInt32(splt.at(1));
+        return 0;
     }
 
     return 1;
@@ -214,6 +343,8 @@ void Sniffer::CheckVersion()
         };
 
         songInfo.synthesiaVersionInfo = "Synthesia v" + version + "/" + revision;
+
+        logger->Log(songInfo.synthesiaVersionInfo, this, LogType::LOG_DEBUG);
     };
 
     if (!valid)

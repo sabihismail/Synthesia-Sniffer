@@ -2,6 +2,7 @@
 
 #include "ui_SynthesiaSniffer.h"
 #include "../util/Settings.h"
+#include "../util/Logger.h"
 #include "../sniffer/Sniffer.h"
 #include "../discord/DiscordRPC.h"
 #include "../util/VariableMessageBox.h"
@@ -15,13 +16,18 @@ class SynthesiaSniffer : public QMainWindow
     Q_OBJECT
 
 public:
-    SynthesiaSniffer(QWidget *parent = Q_NULLPTR);
     Settings* settings = nullptr;
     Sniffer* sniffer = nullptr;
     DiscordRPC* discord = nullptr;
+    Logger* logger = nullptr;
+
+    SynthesiaSniffer(QWidget *parent = Q_NULLPTR);
 
 private:
     Ui::SynthesiaSnifferClass ui;
+    QLabel* lblCurrentInfo = nullptr;
+    QTextEdit* txtInfoLog = nullptr;
+    QTextEdit* txtErrorLog = nullptr;
     std::thread snifferThread;
 
     void closeEvent(QCloseEvent* bar);
