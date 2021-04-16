@@ -279,7 +279,10 @@ int Sniffer::GetCurrentInformation(PEProcess& process)
     }
     catch (std::exception e)
     {
-        logger->LogException(e, this, nameof(StartSniffer));
+        if (running)
+        {
+            logger->LogException(e, this, nameof(StartSniffer));
+        }
 
         return 0;
     }
