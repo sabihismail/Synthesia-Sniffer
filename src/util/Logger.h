@@ -7,6 +7,7 @@
 #include <functional>
 #include <ctime>
 #include <bitset>
+#include <sstream>
 
 #define nameof(name) #name
 

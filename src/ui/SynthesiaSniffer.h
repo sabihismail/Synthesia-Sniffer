@@ -9,7 +9,6 @@
 #include <functional>
 #include <iostream>
 #include <QMainWindow>
-#include <QTranslator>
 #include <qtextedit.h>
 
 class SynthesiaSniffer : public QMainWindow

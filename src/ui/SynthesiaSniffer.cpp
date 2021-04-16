@@ -52,14 +52,14 @@ SynthesiaSniffer::SynthesiaSniffer(QWidget* parent) : QMainWindow(parent)
 
     sniffer->OnGUIRequest([this](VariableMessageBox& obj)
         {
-            QMetaObject::invokeMethod(this, [this, &obj]
+            QMetaObject::invokeMethod(this, [this, obj]
                 {
                     QMessageBox msgBox(this);
-                    msgBox.setText(tr(obj.msg));
+                    msgBox.setText(obj.msg);
 
                     for (int i = 0; i < obj.options.size(); i++)
                     {
-                        msgBox.addButton(tr(obj.options.at(i)), QMessageBox::YesRole);
+                        msgBox.addButton(obj.options.at(i), QMessageBox::YesRole);
                     }
 
                     msgBox.exec();

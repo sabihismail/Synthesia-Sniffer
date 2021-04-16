@@ -29,7 +29,7 @@ void Logger::Log(std::string& inStr, const char* className, LogType logType)
 	auto time = std::time(nullptr);
 	auto tm = *std::localtime(&time);
 
-	std::ostringstream ossTime;
+	std::ostringstream ossTime{};
 	ossTime << std::put_time(&tm, "%d/%m/%Y %H:%M:%S");
 	std::string timeStr = ossTime.str();
 
