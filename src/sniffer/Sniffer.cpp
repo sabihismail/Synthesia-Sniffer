@@ -31,7 +31,7 @@ std::map<std::string, GameModeFlag> GAME_MODE_MAPPING
     { "Both Hands", GameModeFlag::RIGHT_HAND | GameModeFlag::LEFT_HAND },
 };
 
-Sniffer::Sniffer(Settings* settings, Logger* logger)
+Sniffer::Sniffer(std::shared_ptr<Settings> settings, std::shared_ptr<Logger> logger)
 {
     this->settings = settings;
     this->logger = logger;

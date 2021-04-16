@@ -8,18 +8,19 @@
 #include "../util/VariableMessageBox.h"
 #include <functional>
 #include <iostream>
-#include <QtWidgets/QMainWindow>
+#include <QMainWindow>
 #include <QTranslator>
+#include <qtextedit.h>
 
 class SynthesiaSniffer : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    Settings* settings = nullptr;
-    Sniffer* sniffer = nullptr;
-    DiscordRPC* discord = nullptr;
-    Logger* logger = nullptr;
+    std::shared_ptr<Settings> settings = nullptr;
+    std::shared_ptr<Logger> logger = nullptr;
+    std::unique_ptr<Sniffer> sniffer = nullptr;
+    std::unique_ptr<DiscordRPC> discord = nullptr;
 
     SynthesiaSniffer(QWidget *parent = Q_NULLPTR);
 

@@ -12,11 +12,11 @@ class DiscordRPC
 public:
 	int successfulStart = 0;
 
-	DiscordRPC(Logger* logger);
+	DiscordRPC(std::shared_ptr<Logger> logger);
 	void DiscordRPC::SetActivity(ParsedMemoryInfo& memoryInfo);
 
 private:
-	Logger* logger = nullptr;
+	std::shared_ptr<Logger> logger = nullptr;
 	ParsedMemoryInfo oldMemoryInfo{};
 	std::time_t startTime = 0;
 

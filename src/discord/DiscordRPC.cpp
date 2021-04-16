@@ -3,7 +3,7 @@
 constexpr auto CLIENT_ID = 712374934864659046;
 constexpr auto SYNTHESIA_IMAGE = "synthesia";
 
-DiscordRPC::DiscordRPC(Logger* logger)
+DiscordRPC::DiscordRPC(std::shared_ptr<Logger> logger)
 {
     this->logger = logger;
 
@@ -101,9 +101,9 @@ void DiscordRPC::SetActivity(ParsedMemoryInfo& songInfo)
                 }
                 accuracy *= 100;
 
-                std::stringstream stream;
+                std::ostringstream stream;
                 stream << "Accuracy: ";
-                stream << std::fixed << std::setprecision(2) << accuracy;
+                stream << std::fixed << std::setprecision(2) << accuracy << "%";
 
                 assets.SetSmallText(stream.str().c_str());
                 assets.SetLargeText(songInfo.gameModeStr.c_str());

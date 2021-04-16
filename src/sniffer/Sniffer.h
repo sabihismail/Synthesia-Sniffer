@@ -26,15 +26,15 @@ class Sniffer
 public:
 	int running = 1;
 
-	Sniffer(Settings* settings, Logger* logger);
+	Sniffer(std::shared_ptr<Settings> settings, std::shared_ptr<Logger> logger);
 	~Sniffer();
 	void Init();
 	void OnUpdate(std::function<void(ParsedMemoryInfo&)> callback);
 	void OnGUIRequest(std::function<void(VariableMessageBox&)> callback);
 
 private:
-	Settings* settings = nullptr;
-	Logger* logger = nullptr;
+	std::shared_ptr<Settings> settings = nullptr;
+	std::shared_ptr<Logger> logger = nullptr;
 
 	SynthesiaVersion synthesiaVersion{};
 	std::string version;

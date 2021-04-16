@@ -8,10 +8,10 @@ SynthesiaSniffer::SynthesiaSniffer(QWidget* parent) : QMainWindow(parent)
     txtErrorLog = this->findChild<QTextEdit*>("txtErrorLog");
     lblCurrentInfo = this->findChild<QLabel*>("lblCurrentInfo");
 
-    logger = new Logger();
-    settings = new Settings();
-    discord = new DiscordRPC(logger);
-    sniffer = new Sniffer(settings, logger);
+    logger = std::make_shared<Logger>();
+    settings = std::make_shared<Settings>();
+    discord = std::make_unique<DiscordRPC>(logger);
+    sniffer = std::make_unique<Sniffer>(settings, logger);
 
     logger->OnLog([this](LogType logType, std::string& str)
         {
@@ -76,19 +76,9 @@ SynthesiaSniffer::SynthesiaSniffer(QWidget* parent) : QMainWindow(parent)
 
 void SynthesiaSniffer::closeEvent(QCloseEvent *event)
 {
-    try
-    {
-        snifferThread.detach();
+    snifferThread.detach();
 
-        delete sniffer;
-        delete discord;
-        delete settings;
-        delete logger;
-    }
-    catch (std::exception e)
-    {
-
-    }
+    exit(-1);
 }
 
 void SynthesiaSniffer::StartSniffer()

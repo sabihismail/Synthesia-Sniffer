@@ -1,5 +1,15 @@
 #include "Util.h"
 
+std::string Util::SafeStr(std::string& str, std::string& defaultStr)
+{
+	if (str.empty() || str[0] == '\0')
+	{
+		return defaultStr;
+	}
+
+	return str;
+}
+
 std::map<std::string, std::string> Util::ParseStringByFormat(std::string& str, std::string& format)
 {
 	std::vector<std::string> splt;
@@ -68,7 +78,7 @@ std::map<std::string, std::string> Util::ParseStringByFormat(std::string& str, s
 
 	if (!std::regex_search(str, matches, regex))
 	{
-		throw new std::exception("Invalid format.");
+		throw std::exception("Invalid format.");
 	}
 
 	std::map<std::string, std::string> mapping;

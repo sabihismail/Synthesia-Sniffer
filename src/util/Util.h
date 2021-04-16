@@ -23,6 +23,7 @@ public:
 	static uint32_t Util::SafeStringToUInt32(std::string& str, int assumption = 0);
 	static uint64_t Util::SafeStringToUInt64(std::string& str, int assumption = 0);
 	static int ValidString(std::string& str);
+	static std::string SafeStr(std::string& str, std::string& defaultStr = std::string(""));
 	static std::vector<std::string> Util::SplitString(std::string& str, char delimiter, bool toTrim = false);
 	static std::vector<std::string> Util::SplitString(std::string& str, std::string& delimiter, bool toTrim = false);
 	static void LTrim(std::string& s);

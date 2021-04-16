@@ -99,9 +99,9 @@ struct ParsedMemoryInfo
 		ss << nameof(synthesiaVersionInfo) << " - " << synthesiaVersionInfo << "\n\n";
 		ss << nameof(songFilePath) << " - " << songFilePath << "\n\n";
 		ss << nameof(menuType) << " - " << Util::SafeMapRetrieval(MENU_TYPE_TO_STR, menuType, std::string("")) << "\n\n";
-		ss << nameof(gameModeStr) << " - " << gameModeStr << "\n\n";
-		ss << nameof(song.title) << " - " << song.title << "\n\n";
-		ss << nameof(song.artist) << " - " << song.artist << "\n\n";
+		ss << nameof(gameModeStr) << " - " << Util::SafeStr(gameModeStr) << "\n\n";
+		ss << nameof(song.title) << " - " << Util::SafeStr(song.title) << "\n\n";
+		ss << nameof(song.artist) << " - " << Util::SafeStr(song.artist) << "\n\n";
 		ss << nameof(songPlayCount) << " - " << songPlayCount << "\n\n";
 		ss << nameof(timeCurrent) << "/" << nameof(timeTotal) << " - " << timeCurrent << "/" << timeTotal << "\n\n";
 		ss << nameof(notesHit) << "/" << nameof(notesHit) << " - " << notesHit << "/" << notesHit << "\n\n";
