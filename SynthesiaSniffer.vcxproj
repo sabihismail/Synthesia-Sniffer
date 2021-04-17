@@ -168,6 +168,7 @@
     <ClInclude Include="src\sniffer\Sniffer.h" />
     <ClInclude Include="src\sniffer\MemoryInfo.h" />
     <ClInclude Include="src\util\Util.h" />
+    <ClInclude Include="src\sniffer\SynthesiaInfo.h" />
     <QtMoc Include="src\ui\SynthesiaSniffer.h" />
   </ItemGroup>
   <ItemGroup>

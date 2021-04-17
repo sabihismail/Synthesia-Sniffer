@@ -6,6 +6,7 @@
 #include "../util/Logger.h"
 #include "../util/VariableMessageBox.h"
 #include "./MemoryInfo.h"
+#include "./SynthesiaInfo.h"
 #include <QMainWindow>
 #include <QMessageBox>
 #include <qstring.h>
@@ -14,12 +15,6 @@
 #include <functional>
 #include <iostream>
 #include <regex>
-
-struct SynthesiaVersion
-{
-	std::string version;
-	std::string revision;
-};
 
 class Sniffer
 {
@@ -36,7 +31,7 @@ private:
 	std::shared_ptr<Settings> settings = nullptr;
 	std::shared_ptr<Logger> logger = nullptr;
 
-	SynthesiaVersion synthesiaVersion{};
+	Synthesia::MemoryMap memoryMapping{};
 	std::string version;
 	std::string revision;
 
@@ -46,10 +41,11 @@ private:
 	ParsedMemoryInfo oldSongInfo{};
 	ParsedMemoryInfo songInfo{};
 
-	void Sniffer::CheckVersion();
+	void Sniffer::UpdateGUI();
+	void Sniffer::CheckVersion(PEProcess& process);
 	int Sniffer::GetCurrentInformation(PEProcess& process);
 	void Sniffer::FormatSongInfo(PEProcess& process);
 	void Sniffer::CompareMemoryInfoDifferences();
 	uint64_t Sniffer::ConvertTimeToUInt64(std::string& time);
-	ParsedMemoryInfo::Song Sniffer::ParseSongName(std::string& file);
+	ParsedMemoryInfo::Song Sniffer::ParseSongName(std::string& file, PEProcess& process);
 };

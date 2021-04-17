@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CheatTable CheatEngineTableVersion="31">
+  <CheatEntries>
+    <CheatEntry>
+      <ID>0</ID>
+      <Description>"No description"</Description>
+      <VariableType>String</VariableType>
+      <Length>4</Length>
+      <Unicode>0</Unicode>
+      <CodePage>0</CodePage>
+      <ZeroTerminate>1</ZeroTerminate>
+      <Address>Synthesia.exe+41012C</Address>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>1</ID>
+      <Description>"No description"</Description>
+      <VariableType>String</VariableType>
+      <Length>5</Length>
+      <Unicode>0</Unicode>
+      <CodePage>0</CodePage>
+      <ZeroTerminate>1</ZeroTerminate>
+      <Address>Synthesia.exe+410114</Address>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>4</ID>
+      <Description>"No description"</Description>
+      <VariableType>String</VariableType>
+      <Length>6</Length>
+      <Unicode>0</Unicode>
+      <CodePage>0</CodePage>
+      <ZeroTerminate>1</ZeroTerminate>
+      <Address>Synthesia.exe+42D388</Address>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>9</ID>
+      <Description>"pointerscan result"</Description>
+      <VariableType>String</VariableType>
+      <Length>32</Length>
+      <Unicode>0</Unicode>
+      <CodePage>0</CodePage>
+      <ZeroTerminate>1</ZeroTerminate>
+      <Address>"Synthesia.exe"+0042BD38</Address>
+      <Offsets>
+        <Offset>140</Offset>
+        <Offset>8</Offset>
+        <Offset>E4</Offset>
+        <Offset>168</Offset>
+        <Offset>1C4</Offset>
+        <Offset>0</Offset>
+        <Offset>A4</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>15</ID>
+      <Description>"pointerscan result"</Description>
+      <VariableType>String</VariableType>
+      <Length>32</Length>
+      <Unicode>0</Unicode>
+      <CodePage>0</CodePage>
+      <ZeroTerminate>1</ZeroTerminate>
+      <Address>"Synthesia.exe"+0042BD38</Address>
+      <Offsets>
+        <Offset>0</Offset>
+        <Offset>140</Offset>
+        <Offset>4</Offset>
+        <Offset>144</Offset>
+        <Offset>A8</Offset>
+        <Offset>0</Offset>
+        <Offset>A4</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>24</ID>
+      <Description>"pointerscan result"</Description>
+      <ShowAsHex>1</ShowAsHex>
+      <VariableType>Array of byte</VariableType>
+      <ByteLength>1</ByteLength>
+      <Address>"Synthesia.exe"+0042BD34</Address>
+      <Offsets>
+        <Offset>0</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>27</ID>
+      <Description>"pointerscan result"</Description>
+      <VariableType>String</VariableType>
+      <Length>164</Length>
+      <Unicode>0</Unicode>
+      <CodePage>0</CodePage>
+      <ZeroTerminate>1</ZeroTerminate>
+      <Address>"Synthesia.exe"+0042BD38</Address>
+      <Offsets>
+        <Offset>8</Offset>
+        <Offset>88</Offset>
+        <Offset>164</Offset>
+        <Offset>0</Offset>
+        <Offset>208</Offset>
+        <Offset>0</Offset>
+        <Offset>A4</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>29</ID>
+      <Description>"pointerscan result"</Description>
+      <VariableType>String</VariableType>
+      <Length>164</Length>
+      <Unicode>0</Unicode>
+      <CodePage>0</CodePage>
+      <ZeroTerminate>1</ZeroTerminate>
+      <Address>"Synthesia.exe"+0042BD38</Address>
+      <Offsets>
+        <Offset>8</Offset>
+        <Offset>1C4</Offset>
+        <Offset>0</Offset>
+        <Offset>19C</Offset>
+        <Offset>D8</Offset>
+        <Offset>0</Offset>
+        <Offset>A4</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>30</ID>
+      <Description>"pointerscan result"</Description>
+      <VariableType>String</VariableType>
+      <Length>164</Length>
+      <Unicode>0</Unicode>
+      <CodePage>0</CodePage>
+      <ZeroTerminate>1</ZeroTerminate>
+      <Address>"Synthesia.exe"+0042BD38</Address>
+      <Offsets>
+        <Offset>8</Offset>
+        <Offset>C8</Offset>
+        <Offset>1A8</Offset>
+        <Offset>33C</Offset>
+        <Offset>1A4</Offset>
+        <Offset>0</Offset>
+        <Offset>A4</Offset>
+      </Offsets>
+    </CheatEntry>
+  </CheatEntries>
+  <UserdefinedSymbols/>
+  <Comments>Info about this table:
+</Comments>
+</CheatTable>

@@ -125,7 +125,15 @@ void Util::ReplaceAllStringInPlace(std::string& subject, const std::string& sear
 
 int Util::IsNumber(std::string& str)
 {
-	return !str.empty() && std::all_of(str.begin(), str.end(), ::isdigit);
+	for (char c : str)
+	{
+		if (c < '0' || c > '9')
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
 
 int Util::SafeStringToInt(std::string& str, int assumption)

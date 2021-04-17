@@ -51,7 +51,6 @@ struct MemoryInfoStructs
 {
 	struct S1
 	{
-		char unknown1[264];
 		uint64_t currentTimeLong;
 		uint32_t notesHit;
 		uint32_t errors;
@@ -104,7 +103,7 @@ struct ParsedMemoryInfo
 		ss << nameof(song.artist) << " - " << Util::SafeStr(song.artist) << "\n\n";
 		ss << nameof(songPlayCount) << " - " << songPlayCount << "\n\n";
 		ss << nameof(timeCurrent) << "/" << nameof(timeTotal) << " - " << timeCurrent << "/" << timeTotal << "\n\n";
-		ss << nameof(notesHit) << "/" << nameof(notesHit) << " - " << notesHit << "/" << notesHit << "\n\n";
+		ss << nameof(notesHit) << "/" << nameof(notesMax) << " - " << notesHit << "/" << notesMax << "\n\n";
 		ss << nameof(errors) << " - " << errors;
 
 		return ss.str();
