@@ -4,8 +4,8 @@ Discord Rich Presence for Synthesia.
 
 ### Supported Versions
 
-1. v10.6/r5425
-2. v10.7/r5567
+* v10.7/r5567
+* v10.6/r5425
 
 ### Setup
 
