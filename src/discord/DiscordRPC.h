@@ -11,9 +11,11 @@ class DiscordRPC
 {
 public:
 	int successfulStart = 0;
+	bool clearedActivity = false;
 
 	DiscordRPC(std::shared_ptr<Logger> logger);
 	void DiscordRPC::SetActivity(ParsedMemoryInfo& memoryInfo);
+	void DiscordRPC::ClearActivity();
 
 private:
 	std::shared_ptr<Logger> logger = nullptr;

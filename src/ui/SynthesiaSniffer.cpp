@@ -40,7 +40,14 @@ SynthesiaSniffer::SynthesiaSniffer(QWidget* parent) : QMainWindow(parent)
 
     sniffer->OnUpdate([this](ParsedMemoryInfo& memoryInfo)
         {
-            discord->SetActivity(memoryInfo);
+            if (sniffer->processAlive)
+            {
+                discord->SetActivity(memoryInfo);
+            }
+            else 
+            {
+                discord->ClearActivity();
+            }
 
             QString qStr(memoryInfo.ToString().c_str());
 

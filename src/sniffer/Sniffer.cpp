@@ -21,6 +21,7 @@ void Sniffer::Init()
         logger->Log("Found process", this, LogType::LOG_INFO);
 
         CheckVersion(process);
+        processAlive = true;
 
         logger->Log("Completed version check", this, LogType::LOG_DEBUG);
 
@@ -44,6 +45,7 @@ void Sniffer::Init()
 
         logger->Log("Process was closed", this, LogType::LOG_INFO);
 
+        processAlive = false;
         songInfo = {};
 
         UpdateGUI();

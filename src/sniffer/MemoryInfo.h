@@ -65,6 +65,7 @@ struct ParsedMemoryInfo
 {
 	std::map<MenuType, std::string> MENU_TYPE_TO_STR
 	{
+		{ MenuType::UNKNOWN, "Unknown/Closed" },
 		{ MenuType::MAIN_MENU, "Main Menu" },
 		{ MenuType::TRACK_SELECTION, "Track Selection" },
 		{ MenuType::FREE_PLAY, "Free Play" },

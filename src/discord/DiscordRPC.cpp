@@ -35,6 +35,8 @@ DiscordRPC::DiscordRPC(std::shared_ptr<Logger> logger)
 
 void DiscordRPC::SetActivity(ParsedMemoryInfo& songInfo)
 {
+    this->clearedActivity = false;
+
     try
     {
         discord::Activity activity{};
@@ -48,7 +50,7 @@ void DiscordRPC::SetActivity(ParsedMemoryInfo& songInfo)
         assets.SetLargeImage(SYNTHESIA_IMAGE);
         assets.SetLargeText(songInfo.synthesiaVersionInfo.c_str());
 
-        if (oldMemoryInfo.menuType != songInfo.menuType)
+        if (oldMemoryInfo.menuType == MenuType::UNKNOWN) 
         {
             startTime = std::time(nullptr);
         }
@@ -119,12 +121,11 @@ void DiscordRPC::SetActivity(ParsedMemoryInfo& songInfo)
 
         core->ActivityManager().UpdateActivity(activity, [this](discord::Result result)
             {
-                if (result != discord::Result::Ok)
-                {
-                    std::string str = "UpdateActivity failed: " + ToUnderlying(result);
+                if (result == discord::Result::Ok) return;
 
-                    logger->Log(str, this, LogType::LOG_ERROR);
-                }
+                std::string str = "UpdateActivity failed: " + ToUnderlying(result);
+
+                logger->Log(str, this, LogType::LOG_ERROR);
             });
 
         core->RunCallbacks();
@@ -135,4 +136,19 @@ void DiscordRPC::SetActivity(ParsedMemoryInfo& songInfo)
     {
         logger->LogException(e, nameof(SetActivity));
     }
+}
+
+void DiscordRPC::ClearActivity()
+{
+    if (this->clearedActivity) return;
+
+    core->ActivityManager().ClearActivity([this](discord::Result result)
+    {
+        this->clearedActivity = result == discord::Result::Ok;
+    });
+
+    core->RunCallbacks();
+
+    // Used to reset timer once again
+    oldMemoryInfo.menuType = MenuType::UNKNOWN;
 }

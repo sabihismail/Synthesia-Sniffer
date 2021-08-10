@@ -20,6 +20,7 @@ class Sniffer
 {
 public:
 	int running = 1;
+	bool processAlive = true;
 
 	Sniffer(std::shared_ptr<Settings> settings, std::shared_ptr<Logger> logger);
 	~Sniffer();
