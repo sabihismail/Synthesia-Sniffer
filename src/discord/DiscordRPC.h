@@ -1,19 +1,20 @@
 #pragma once
 
+#include <ctime>
+#include <iostream>
+#include <sstream>
+
 #include "../../libs/discord_sdk/include/discord.h"
 #include "../sniffer/MemoryInfo.h"
 #include "../util/Logger.h"
-#include <ctime>
-#include <sstream>
-#include <iostream>
 
 class DiscordRPC
 {
 public:
-	int successfulStart = 0;
 	bool clearedActivity = false;
 
 	DiscordRPC(std::shared_ptr<Logger> logger);
+	void DiscordRPC::Init();
 	void DiscordRPC::SetActivity(ParsedMemoryInfo& memoryInfo);
 	void DiscordRPC::ClearActivity();
 
@@ -21,8 +22,9 @@ private:
 	std::shared_ptr<Logger> logger = nullptr;
 	ParsedMemoryInfo oldMemoryInfo{};
 	std::time_t startTime = 0;
+	bool failed = false;
 
-	discord::Core* core{};
+	discord::Core* core = nullptr;
 	discord::User user{};
 };
 

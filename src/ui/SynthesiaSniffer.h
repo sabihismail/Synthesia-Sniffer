@@ -23,6 +23,8 @@ public:
 
     SynthesiaSniffer(QWidget *parent = Q_NULLPTR);
 
+    void SynthesiaSniffer::CreateMessageBox(VariableMessageBox& obj);
+
 private:
     Ui::SynthesiaSnifferClass ui;
     QLabel* lblCurrentInfo = nullptr;
@@ -30,6 +32,6 @@ private:
     QTextEdit* txtErrorLog = nullptr;
     std::thread snifferThread;
 
-    void closeEvent(QCloseEvent* bar);
     void SynthesiaSniffer::StartSniffer();
+    void closeEvent(QCloseEvent* bar);
 };

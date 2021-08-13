@@ -7,35 +7,48 @@ DiscordRPC::DiscordRPC(std::shared_ptr<Logger> logger)
 {
     this->logger = logger;
 
+    Init();
+}
+
+void DiscordRPC::Init()
+{
+    core = {};
+
     auto result = discord::Core::Create(CLIENT_ID, DiscordCreateFlags_Default, &core);
 
     if (result != discord::Result::Ok)
     {
+        this->logger->Log("SynthesiaSniffer could not connect to Discord RPC.", this, LogType::LOG_ERROR);
+
+        failed = true;
         return;
     }
 
-    core->SetLogHook(discord::LogLevel::Debug, [this, logger](discord::LogLevel lvl, const char* str)
-        {
-            logger->Log(str, this, LogType::LOG_ERROR);
-        });
+    core->SetLogHook(discord::LogLevel::Debug, [this](discord::LogLevel lvl, const char* str)
+    {
+        this->logger->Log(str, this, LogType::LOG_ERROR);
+    });
 
-    core->UserManager().OnCurrentUserUpdate.Connect([this, logger]() 
-        {
-            core->UserManager().GetCurrentUser(&user);
+    core->UserManager().OnCurrentUserUpdate.Connect([this]()
+    {
+        core->UserManager().GetCurrentUser(&user);
 
-            std::string str = "Username: " + std::string(user.GetUsername()) + " - ID: " + std::to_string(user.GetId());
+        std::string str = "Username: " + std::string(user.GetUsername()) + " - ID: " + std::to_string(user.GetId());
 
-            logger->Log(str, this, LogType::LOG_INFO);
-        });
+        this->logger->Log(str, this, LogType::LOG_INFO);
+    });
 
     core->RunCallbacks();
-
-    successfulStart = 1;
 }
 
 void DiscordRPC::SetActivity(ParsedMemoryInfo& songInfo)
 {
-    this->clearedActivity = false;
+    if (failed) return;
+
+    if (this->core == nullptr)
+    {
+        Init();
+    }
 
     try
     {
@@ -140,14 +153,11 @@ void DiscordRPC::SetActivity(ParsedMemoryInfo& songInfo)
 
 void DiscordRPC::ClearActivity()
 {
-    if (this->clearedActivity) return;
+    if (failed) return;
+    if (this->core == nullptr) return;
 
-    core->ActivityManager().ClearActivity([this](discord::Result result)
-    {
-        this->clearedActivity = result == discord::Result::Ok;
-    });
-
-    core->RunCallbacks();
+    delete core;
+    core = nullptr;
 
     // Used to reset timer once again
     oldMemoryInfo.menuType = MenuType::UNKNOWN;

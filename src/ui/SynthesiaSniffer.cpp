@@ -14,71 +14,76 @@ SynthesiaSniffer::SynthesiaSniffer(QWidget* parent) : QMainWindow(parent)
     sniffer = std::make_unique<Sniffer>(settings, logger);
 
     logger->OnLog([this](LogType logType, std::string& str)
+    {
+        if (logType == LogType::LOG_DEBUG)
         {
-            if (logType == LogType::LOG_DEBUG)
+            return;
+        }
+
+        QString qStr(str.c_str());
+        qStr += "\n";
+
+        QMetaObject::invokeMethod(this, [this, logType, qStr]
+        {
+            QTextEdit* txt = txtInfoLog;
+
+            if (logType == LogType::LOG_ERROR)
             {
-                return;
+                txt = txtErrorLog;
             }
 
-            QString qStr(str.c_str());
-            qStr += "\n";
-
-            QMetaObject::invokeMethod(this, [this, logType, qStr]
-                {
-                    QTextEdit* txt = txtInfoLog;
-
-                    if (logType == LogType::LOG_ERROR)
-                    {
-                        txt = txtErrorLog;
-                    }
-
-                    txt->moveCursor(QTextCursor::End);
-                    txt->insertPlainText(qStr);
-                    txt->moveCursor(QTextCursor::End);
-                }, Qt::QueuedConnection);
-        });
+            txt->moveCursor(QTextCursor::End);
+            txt->insertPlainText(qStr);
+            txt->moveCursor(QTextCursor::End);
+        }, Qt::QueuedConnection);
+    });
 
     sniffer->OnUpdate([this](ParsedMemoryInfo& memoryInfo)
+    {
+        if (sniffer->processAlive)
         {
-            if (sniffer->processAlive)
-            {
-                discord->SetActivity(memoryInfo);
-            }
-            else 
-            {
-                discord->ClearActivity();
-            }
+            discord->SetActivity(memoryInfo);
+        }
+        else 
+        {
+            discord->ClearActivity();
+        }
 
-            QString qStr(memoryInfo.ToString().c_str());
+        QString qStr(memoryInfo.ToString().c_str());
 
-            QMetaObject::invokeMethod(this, [this, qStr]
-                {
-                    lblCurrentInfo->setText(qStr);
-                });
+        QMetaObject::invokeMethod(this, [this, qStr]
+        {
+            lblCurrentInfo->setText(qStr);
         });
+    });
 
     sniffer->OnGUIRequest([this](VariableMessageBox& obj)
-        {
-            QMetaObject::invokeMethod(this, [this, obj]
-                {
-                    QMessageBox msgBox(this);
-                    msgBox.setText(obj.msg);
-
-                    for (int i = 0; i < obj.options.size(); i++)
-                    {
-                        msgBox.addButton(obj.options.at(i), QMessageBox::YesRole);
-                    }
-
-                    msgBox.exec();
-
-                    QAbstractButton* clicked = msgBox.clickedButton();
-                    int index = msgBox.buttons().indexOf(clicked);
-
-                    obj.callbacks.at(index)();
-                }, Qt::QueuedConnection);
-        });
+    {
+        CreateMessageBox(obj);
+    });
 
     snifferThread = std::thread(&SynthesiaSniffer::StartSniffer, this);
+}
+
+void SynthesiaSniffer::CreateMessageBox(VariableMessageBox& obj)
+{
+    QMetaObject::invokeMethod(this, [this, obj]
+    {
+        QMessageBox msgBox(this);
+        msgBox.setText(obj.msg);
+
+        for (int i = 0; i < obj.options.size(); i++)
+        {
+            msgBox.addButton(obj.options.at(i), QMessageBox::YesRole);
+        }
+
+        msgBox.exec();
+
+        QAbstractButton* clicked = msgBox.clickedButton();
+        int index = msgBox.buttons().indexOf(clicked);
+
+        obj.callbacks.at(index)();
+    }, Qt::QueuedConnection);
 }
 
 void SynthesiaSniffer::closeEvent(QCloseEvent *event)
