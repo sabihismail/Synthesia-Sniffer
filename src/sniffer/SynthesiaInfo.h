@@ -59,13 +59,27 @@ namespace Synthesia
 		Synthesia::MemoryFetch { 0x0042BD38, 400, std::vector<int> { 0xA4, 0x0, 0x1A4, 0x33C, 0x1A8, 0xC8 } },
 	};
 
+	static MemoryMap v10p9
+	{
+		Synthesia::MemoryTuple<int, const char*> { 0x00393530, "10.9" },
+		Synthesia::MemoryTuple<int, const char*> { 0x0050C8E0, "r5903" },
+		Synthesia::MemoryFetch { 0x0042D388 },
+		Synthesia::MemoryFetch { 0x0042BD38, 320, std::vector<int> { 0xA4, 0x0, 0x1C4, 0x168, 0xE4, 0x8 } },
+		Synthesia::MemoryFetch { 0x0042BD38, 140, std::vector<int> { 0xA4, 0x0, 0xA8, 0x144, 0x4, 0x140 } },
+		Synthesia::MemoryFetch { 0x0042BD34, 264 },
+		Synthesia::MemoryFetch { 0x0042BD38, 400, std::vector<int> { 0xA4, 0x0, 0x208, 0x0, 0x164, 0x88 } },
+		Synthesia::MemoryFetch { 0x0042BD38, 400, std::vector<int> { 0xA4, 0x0, 0xD8, 0x19C, 0x0, 0x1C4 } },
+		Synthesia::MemoryFetch { 0x0042BD38, 400, std::vector<int> { 0xA4, 0x0, 0x1A4, 0x33C, 0x1A8, 0xC8 } },
+	};
+
 	static std::vector<MemoryMap> MEMORY_MAPPING
 	{
 		v10p6,
-		v10p7
+		v10p7,
+		v10p9
 	};
 
-	static wchar_t* PROCESS_NAME = _T("Synthesia.exe");
+	static const wchar_t* PROCESS_NAME = _T("Synthesia.exe");
 
 	static std::map<std::string, MenuType> MENU_MAPPING
 	{

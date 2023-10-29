@@ -4,7 +4,7 @@
 #include <iostream>
 #include <sstream>
 
-#include "../../libs/discord_sdk/include/discord.h"
+#include "../../libs/discord_sdk/x64/include/discord.h"
 #include "../sniffer/MemoryInfo.h"
 #include "../util/Logger.h"
 

@@ -1,6 +1,6 @@
 #include "Util.h"
 
-std::string Util::SafeStr(std::string& str, std::string& defaultStr)
+std::string Util::SafeStr(std::string& str, std::string defaultStr)
 {
 	if (str.empty() || str[0] == '\0')
 	{
@@ -155,7 +155,8 @@ int Util::SafeStringToInt(char* arr, int length, int assumption)
 		return assumption;
 	}
 
-	return SafeStringToInt(std::string(arr), assumption);
+	auto str = std::string(arr);
+	return SafeStringToInt(str, assumption);
 }
 
 uint32_t Util::SafeStringToUInt32(std::string& str, int assumption)
@@ -201,7 +202,7 @@ int Util::ValidString(std::string& str)
 	return !str.empty();
 }
 
-std::vector<std::string> Util::SplitString(std::string& str, std::string& delimiter, bool toTrim)
+std::vector<std::string> Util::SplitString(std::string str, std::string delimiter, bool toTrim)
 {
 	std::string duplicated(str);
 
@@ -235,7 +236,7 @@ std::vector<std::string> Util::SplitString(std::string& str, std::string& delimi
 	return lst;
 }
 
-std::vector<std::string> Util::SplitString(std::string& str, char delimiter, bool toTrim)
+std::vector<std::string> Util::SplitString(std::string str, char delimiter, bool toTrim)
 {
 	std::vector<std::string> lst;
 

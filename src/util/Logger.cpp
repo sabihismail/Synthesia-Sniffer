@@ -10,7 +10,7 @@ std::mutex logErrorMutex;
 
 Logger::Logger() {}
 
-void Logger::Log(std::string& inStr, const char* className, LogType logType)
+void Logger::Log(std::string inStr, const char* className, LogType logType)
 {
 	std::mutex* mutex = &logMutex;
 	std::string file = LOG_FILE;
@@ -62,7 +62,7 @@ void Logger::LogDifference(const char* variable, int oldVal, int newVal, bool is
 	LogDifference(variable, oldConv, newConv, logType);
 }
 
-void Logger::LogDifference(const char* variable, std::string& oldVal, std::string& newVal, LogType logType)
+void Logger::LogDifference(const char* variable, std::string oldVal, std::string newVal, LogType logType)
 {
 	std::string str = " from " + oldVal + " to " + newVal;
 

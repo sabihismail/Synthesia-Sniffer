@@ -5,26 +5,41 @@
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{6D977921-AB89-4408-B7BD-B04B69328F5B}</ProjectGuid>
     <Keyword>QtVS_v304</Keyword>
     <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'">10.0.19041.0</WindowsTargetPlatformVersion>
-    <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'">10.0.19041.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'">10.0</WindowsTargetPlatformVersion>
     <QtMsBuild Condition="'$(QtMsBuild)'=='' OR !Exists('$(QtMsBuild)\qt.targets')">$(MSBuildProjectDirectory)\QtMsBuild</QtMsBuild>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt_defaults.props')">
@@ -58,9 +73,18 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'">
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <QtInstall>C:\Qt\5.15.2\msvc2019_64</QtInstall>
+    <QtModules>core;gui;widgets</QtModules>
+    <QtDeploy>false</QtDeploy>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Link>
-      <AdditionalDependencies>dbghelp.lib;discord_game_sdk.dll.lib;$(OutDir)WindowsProcessMemoryReadWrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dbghelp.lib;x32\discord_game_sdk.dll.lib;$(OutDir)WindowsProcessMemoryReadWrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
       <AdditionalLibraryDirectories>$(SolutionDir)libs\discord_sdk;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -79,7 +103,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Link>
-      <AdditionalDependencies>dbghelp.lib;discord_game_sdk.dll.lib;$(OutDir)WindowsProcessMemoryReadWrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dbghelp.lib;x64\discord_game_sdk.dll.lib;$(OutDir)WindowsProcessMemoryReadWrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)libs\discord_sdk;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <ClCompile>
@@ -88,6 +112,21 @@
     </ClCompile>
     <PreBuildEvent>
       <Command>xcopy /y /d "$(SolutionDir)libs\discord_sdk\discord_game_sdk.dll" "$(OutDir)"</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Windows-Process-Memory-Read-Write\src;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtWidgets;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(SolutionDir)libs\discord_sdk\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>dbghelp.lib;discord_game_sdk.dll.lib;$(OutDir)WindowsProcessMemoryReadWrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PreBuildEvent>
+      <Command>xcopy /y /d "$(SolutionDir)libs\discord_sdk\x64\discord_game_sdk.dll" "$(OutDir)"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'" Label="Configuration">
@@ -121,20 +160,20 @@
     <QtUic Include="SynthesiaSniffer.ui" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="libs\discord_sdk\include\achievement_manager.cpp" />
-    <ClCompile Include="libs\discord_sdk\include\activity_manager.cpp" />
-    <ClCompile Include="libs\discord_sdk\include\application_manager.cpp" />
-    <ClCompile Include="libs\discord_sdk\include\core.cpp" />
-    <ClCompile Include="libs\discord_sdk\include\image_manager.cpp" />
-    <ClCompile Include="libs\discord_sdk\include\lobby_manager.cpp" />
-    <ClCompile Include="libs\discord_sdk\include\network_manager.cpp" />
-    <ClCompile Include="libs\discord_sdk\include\overlay_manager.cpp" />
-    <ClCompile Include="libs\discord_sdk\include\relationship_manager.cpp" />
-    <ClCompile Include="libs\discord_sdk\include\storage_manager.cpp" />
-    <ClCompile Include="libs\discord_sdk\include\store_manager.cpp" />
-    <ClCompile Include="libs\discord_sdk\include\types.cpp" />
-    <ClCompile Include="libs\discord_sdk\include\user_manager.cpp" />
-    <ClCompile Include="libs\discord_sdk\include\voice_manager.cpp" />
+    <ClCompile Include="libs\discord_sdk\x64\include\achievement_manager.cpp" />
+    <ClCompile Include="libs\discord_sdk\x64\include\activity_manager.cpp" />
+    <ClCompile Include="libs\discord_sdk\x64\include\application_manager.cpp" />
+    <ClCompile Include="libs\discord_sdk\x64\include\core.cpp" />
+    <ClCompile Include="libs\discord_sdk\x64\include\image_manager.cpp" />
+    <ClCompile Include="libs\discord_sdk\x64\include\lobby_manager.cpp" />
+    <ClCompile Include="libs\discord_sdk\x64\include\network_manager.cpp" />
+    <ClCompile Include="libs\discord_sdk\x64\include\overlay_manager.cpp" />
+    <ClCompile Include="libs\discord_sdk\x64\include\relationship_manager.cpp" />
+    <ClCompile Include="libs\discord_sdk\x64\include\storage_manager.cpp" />
+    <ClCompile Include="libs\discord_sdk\x64\include\store_manager.cpp" />
+    <ClCompile Include="libs\discord_sdk\x64\include\types.cpp" />
+    <ClCompile Include="libs\discord_sdk\x64\include\user_manager.cpp" />
+    <ClCompile Include="libs\discord_sdk\x64\include\voice_manager.cpp" />
     <ClCompile Include="src\util\Logger.cpp" />
     <ClCompile Include="src\util\Settings.cpp" />
     <ClCompile Include="src\discord\DiscordRPC.cpp" />
@@ -144,23 +183,23 @@
     <ClCompile Include="src\util\Util.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="libs\discord_sdk\include\achievement_manager.h" />
-    <ClInclude Include="libs\discord_sdk\include\activity_manager.h" />
-    <ClInclude Include="libs\discord_sdk\include\application_manager.h" />
-    <ClInclude Include="libs\discord_sdk\include\core.h" />
-    <ClInclude Include="libs\discord_sdk\include\discord.h" />
-    <ClInclude Include="libs\discord_sdk\include\event.h" />
-    <ClInclude Include="libs\discord_sdk\include\ffi.h" />
-    <ClInclude Include="libs\discord_sdk\include\image_manager.h" />
-    <ClInclude Include="libs\discord_sdk\include\lobby_manager.h" />
-    <ClInclude Include="libs\discord_sdk\include\network_manager.h" />
-    <ClInclude Include="libs\discord_sdk\include\overlay_manager.h" />
-    <ClInclude Include="libs\discord_sdk\include\relationship_manager.h" />
-    <ClInclude Include="libs\discord_sdk\include\storage_manager.h" />
-    <ClInclude Include="libs\discord_sdk\include\store_manager.h" />
-    <ClInclude Include="libs\discord_sdk\include\types.h" />
-    <ClInclude Include="libs\discord_sdk\include\user_manager.h" />
-    <ClInclude Include="libs\discord_sdk\include\voice_manager.h" />
+    <ClInclude Include="libs\discord_sdk\x64\include\achievement_manager.h" />
+    <ClInclude Include="libs\discord_sdk\x64\include\activity_manager.h" />
+    <ClInclude Include="libs\discord_sdk\x64\include\application_manager.h" />
+    <ClInclude Include="libs\discord_sdk\x64\include\core.h" />
+    <ClInclude Include="libs\discord_sdk\x64\include\discord.h" />
+    <ClInclude Include="libs\discord_sdk\x64\include\event.h" />
+    <ClInclude Include="libs\discord_sdk\x64\include\ffi.h" />
+    <ClInclude Include="libs\discord_sdk\x64\include\image_manager.h" />
+    <ClInclude Include="libs\discord_sdk\x64\include\lobby_manager.h" />
+    <ClInclude Include="libs\discord_sdk\x64\include\network_manager.h" />
+    <ClInclude Include="libs\discord_sdk\x64\include\overlay_manager.h" />
+    <ClInclude Include="libs\discord_sdk\x64\include\relationship_manager.h" />
+    <ClInclude Include="libs\discord_sdk\x64\include\storage_manager.h" />
+    <ClInclude Include="libs\discord_sdk\x64\include\store_manager.h" />
+    <ClInclude Include="libs\discord_sdk\x64\include\types.h" />
+    <ClInclude Include="libs\discord_sdk\x64\include\user_manager.h" />
+    <ClInclude Include="libs\discord_sdk\x64\include\voice_manager.h" />
     <ClInclude Include="src\util\Logger.h" />
     <ClInclude Include="src\util\Settings.h" />
     <ClInclude Include="src\util\VariableMessageBox.h" />

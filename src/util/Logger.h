@@ -28,14 +28,14 @@ class Logger
 {
 public:
 	Logger();
-	void Log(std::string& str, const char* className, LogType logType = LogType::LOG_DEBUG);
+	void Log(std::string str, const char* className, LogType logType = LogType::LOG_DEBUG);
 	template<class T>
-	void Log(std::string& str, T t, LogType logType = LogType::LOG_DEBUG);
+	void Log(std::string str, T t, LogType logType = LogType::LOG_DEBUG);
 	template<class T>
 	void Log(const char* str, T t, LogType logType = LogType::LOG_DEBUG);
 	template<class T>
 	void LogException(std::exception& e, T t, std::string str = "");
-	void LogDifference(const char* variable, std::string& oldVal, std::string& newVal, LogType logType = LogType::LOG_DEBUG);
+	void LogDifference(const char* variable, std::string oldVal, std::string newVal, LogType logType = LogType::LOG_DEBUG);
 	void LogDifference(const char* variable, int oldVal, int newVal, bool isEnum = true, LogType logType = LogType::LOG_DEBUG);
 	void OnLog(std::function<void(LogType&, std::string&)> func);
 
@@ -44,7 +44,7 @@ private:
 };
 
 template<class T>
-void Logger::Log(std::string& str, T t, LogType logType)
+void Logger::Log(std::string str, T t, LogType logType)
 {
 	Log(str, typeid(T).name(), logType);
 }

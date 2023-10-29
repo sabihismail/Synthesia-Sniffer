@@ -398,7 +398,4 @@ log.txt
 logError.txt
 settings.json
 
-!discord_game_sdk.dll
-!discord_game_sdk.dll.lib
-
 /res/SynthesiaBuilds
