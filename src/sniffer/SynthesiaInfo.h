@@ -61,9 +61,9 @@ namespace Synthesia
 
 	static MemoryMap v10p9
 	{
-		Synthesia::MemoryTuple<int, const char*> { 0x00393530, "10.9" },
+		Synthesia::MemoryTuple<int, const char*> { 0x00511978, "10.9" },
 		Synthesia::MemoryTuple<int, const char*> { 0x0050C8E0, "r5903" },
-		Synthesia::MemoryFetch { 0x0042D388 },
+		Synthesia::MemoryFetch { 0x00513568, 480, std::vector<int> { 0x80, 0x0, 0x80, 0x40, 0x40, 0x828 } },
 		Synthesia::MemoryFetch { 0x0042BD38, 320, std::vector<int> { 0xA4, 0x0, 0x1C4, 0x168, 0xE4, 0x8 } },
 		Synthesia::MemoryFetch { 0x0042BD38, 140, std::vector<int> { 0xA4, 0x0, 0xA8, 0x144, 0x4, 0x140 } },
 		Synthesia::MemoryFetch { 0x0042BD34, 264 },
