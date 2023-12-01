@@ -164,17 +164,17 @@ int Sniffer::GetCurrentInformation(PEProcess& process)
 {
     try 
     {
-        std::string menuAddress = process.ReadMemoryString(memoryMapping.menu.address, 16);
-        if (Util::ValidString(menuAddress))
+        LPVOID menuAddress = process.ReadMemoryAddressChain(memoryMapping.menu.address, memoryMapping.menu.offsets.data(), memoryMapping.menu.offsets.size());
+        std::string menuAddressStr = process.ReadMemoryString(menuAddress, 16);
+        if (Util::ValidString(menuAddressStr))
         {
-            MenuType menuType = Util::SafeMapRetrieval(Synthesia::MENU_MAPPING, menuAddress, MenuType::UNKNOWN);
+            MenuType menuType = Util::SafeMapRetrieval(Synthesia::MENU_MAPPING, menuAddressStr, MenuType::UNKNOWN);
 
-            LPVOID songPausedAddress = process.ReadMemoryAddressChain(memoryMapping.songPaused.address, 
-                memoryMapping.songPaused.offsets.data(), memoryMapping.songPaused.offsets.size());
+            LPVOID songPausedAddress = process.ReadMemoryAddressChain(memoryMapping.songPaused.address, memoryMapping.songPaused.offsets.data(), memoryMapping.songPaused.offsets.size());
 
             if (songPausedAddress != 0x0)
             {
-                std::string songPausedStr = process.ReadMemoryString(songPausedAddress, 12, nullptr, memoryMapping.songPaused.offsetRun);
+                std::string songPausedStr = ""; // process.ReadMemoryString(songPausedAddress, 12, nullptr, memoryMapping.songPaused.offsets.data());
 
                 if (songPausedStr == "Song Paused")
                 {
@@ -185,8 +185,7 @@ int Sniffer::GetCurrentInformation(PEProcess& process)
             GameModeFlag gameMode = GameModeFlag::NONE;
             if (menuType == MenuType::GAME_MODE_SELECTION)
             {
-                LPVOID gameModeAddress = process.ReadMemoryAddressChain(memoryMapping.gameMode.address, memoryMapping.gameMode.offsets.data(),
-                    memoryMapping.gameMode.offsets.size());
+                LPVOID gameModeAddress = process.ReadMemoryAddressChain(memoryMapping.gameMode.address, memoryMapping.gameMode.offsets.data(), memoryMapping.gameMode.offsets.size());
                 std::string gameModeStr = process.ReadMemoryString(gameModeAddress, 32);
                 auto splt = Util::SplitString(gameModeStr, std::string(" • "), true);
 
@@ -219,39 +218,35 @@ int Sniffer::GetCurrentInformation(PEProcess& process)
         }
 
         LPVOID songInfoAddress = process.ReadMemoryAddress(memoryMapping.songInfo.address);
-        songInfoTemp.songInfoRead = process.ReadMemoryStruct<MemoryInfoStructs::S1>(songInfoAddress, memoryMapping.songInfo.offsetRun);
+        songInfoTemp.songInfoRead = MemoryInfoStructs::S1{}; // process.ReadMemoryStruct<MemoryInfoStructs::S1>(songInfoAddress, memoryMapping.songInfo.offsets.data());
 
         std::string songFilePath = process.ReadMemoryString(songInfoTemp.songInfoRead.addressToSongFilePath, MAX_PATH * 2);
         songInfo.songFilePath = songFilePath;
 
-        LPVOID totalTimeAddress = process.ReadMemoryAddressChain(memoryMapping.totalTime.address, memoryMapping.totalTime.offsets.data(),
-            memoryMapping.totalTime.offsets.size());
-        std::string totalTime = process.ReadMemoryString(totalTimeAddress, 16, nullptr, memoryMapping.totalTime.offsetRun);
+        LPVOID totalTimeAddress = process.ReadMemoryAddressChain(memoryMapping.totalTime.address, memoryMapping.totalTime.offsets.data(), memoryMapping.totalTime.offsets.size());
+        std::string totalTime = ""; // process.ReadMemoryString(totalTimeAddress, 16, nullptr, memoryMapping.totalTime.offsets.data());
 
         if (Util::ValidString(totalTime))
         {
             songInfo.timeTotal = ConvertTimeToUInt64(totalTime);
         }
 
-        LPVOID currentTimeAddress = process.ReadMemoryAddressChain(memoryMapping.currentTime.address, memoryMapping.currentTime.offsets.data(),
-            memoryMapping.currentTime.offsets.size());
-        std::string currentTime = process.ReadMemoryString(currentTimeAddress, 16, nullptr, memoryMapping.currentTime.offsetRun);
+        LPVOID currentTimeAddress = process.ReadMemoryAddressChain(memoryMapping.currentTime.address, memoryMapping.currentTime.offsets.data(), memoryMapping.currentTime.offsets.size());
+        std::string currentTime = ""; // process.ReadMemoryString(currentTimeAddress, 16, nullptr, memoryMapping.currentTime.offsets.data());
 
         if (Util::ValidString(currentTime))
         {
             songInfo.timeCurrent = ConvertTimeToUInt64(currentTime);
         }
         
-        LPVOID notesAddress = process.ReadMemoryAddressChain(memoryMapping.notes.address, memoryMapping.notes.offsets.data(),
-            memoryMapping.notes.offsets.size());
-        std::string notes = process.ReadMemoryString(notesAddress, 16, nullptr, memoryMapping.notes.offsetRun);
+        LPVOID notesAddress = process.ReadMemoryAddressChain(memoryMapping.notes.address, memoryMapping.notes.offsets.data(), memoryMapping.notes.offsets.size());
+        std::string notes = ""; // process.ReadMemoryString(notesAddress, 16, nullptr, memoryMapping.notes.offsets.data());
 
         if (Util::ValidString(notes))
         {
             auto splt = Util::SplitString(notes, '/', true);
             songInfo.notesMax = Util::SafeStringToUInt32(splt.at(1));
         }
-
     }
     catch (std::exception e)
     {

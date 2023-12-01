@@ -16,7 +16,6 @@ namespace Synthesia
 	struct MemoryFetch
 	{
 		int address;
-		int offsetRun;
 		std::vector<int> offsets;
 	};
 
@@ -33,49 +32,22 @@ namespace Synthesia
 		Synthesia::MemoryFetch notes; // notesLabel
 	};
 
-	static MemoryMap v10p6
-	{
-		Synthesia::MemoryTuple<int, const char*> { 0x00376C30, "10.6" },
-		Synthesia::MemoryTuple<int, const char*> { 0x00376C38, "r5425" },
-		Synthesia::MemoryFetch { 0x004203E8 },
-		Synthesia::MemoryFetch { 0x0041EE38, 280, std::vector<int> { 0xA4, 0x0, 0xD8, 0x64, 0x168, 0x168 } },
-		Synthesia::MemoryFetch { 0x0041EE38, 0, std::vector<int> { 0xA4, 0x0, 0xA8, 0x128, 0x14, 0x118 } },
-		Synthesia::MemoryFetch { 0x0041EE34, 264 },
-		Synthesia::MemoryFetch { 0x0041EE38, 364, std::vector<int> { 0xA4, 0x0, 0xC4, 0x1B0, 0x0, 0x180 } },
-		Synthesia::MemoryFetch { 0x0041EE38, 364, std::vector<int> { 0xA4, 0x0, 0xD0, 0x168, 0x1CC, 0x84 } },
-		Synthesia::MemoryFetch { 0x0041EE38, 364, std::vector<int> { 0xA4, 0x0, 0xC4, 0x124, 0x19C, 0x180 } },
-	};
-
-	static MemoryMap v10p7
-	{
-		Synthesia::MemoryTuple<int, const char*> { 0x0041012C, "10.7" },
-		Synthesia::MemoryTuple<int, const char*> { 0x00410114, "r5567" },
-		Synthesia::MemoryFetch { 0x0042D388 },
-		Synthesia::MemoryFetch { 0x0042BD38, 320, std::vector<int> { 0xA4, 0x0, 0x1C4, 0x168, 0xE4, 0x8 } },
-		Synthesia::MemoryFetch { 0x0042BD38, 140, std::vector<int> { 0xA4, 0x0, 0xA8, 0x144, 0x4, 0x140 } },
-		Synthesia::MemoryFetch { 0x0042BD34, 264 },
-		Synthesia::MemoryFetch { 0x0042BD38, 400, std::vector<int> { 0xA4, 0x0, 0x208, 0x0, 0x164, 0x88 } },
-		Synthesia::MemoryFetch { 0x0042BD38, 400, std::vector<int> { 0xA4, 0x0, 0xD8, 0x19C, 0x0, 0x1C4 } },
-		Synthesia::MemoryFetch { 0x0042BD38, 400, std::vector<int> { 0xA4, 0x0, 0x1A4, 0x33C, 0x1A8, 0xC8 } },
-	};
-
+	// 64-bit is the only supported version now
 	static MemoryMap v10p9
 	{
 		Synthesia::MemoryTuple<int, const char*> { 0x00511978, "10.9" },
 		Synthesia::MemoryTuple<int, const char*> { 0x0050C8E0, "r5903" },
-		Synthesia::MemoryFetch { 0x00513568, 480, std::vector<int> { 0x80, 0x0, 0x80, 0x40, 0x40, 0x828 } },
-		Synthesia::MemoryFetch { 0x0042BD38, 320, std::vector<int> { 0xA4, 0x0, 0x1C4, 0x168, 0xE4, 0x8 } },
-		Synthesia::MemoryFetch { 0x0042BD38, 140, std::vector<int> { 0xA4, 0x0, 0xA8, 0x144, 0x4, 0x140 } },
-		Synthesia::MemoryFetch { 0x0042BD34, 264 },
-		Synthesia::MemoryFetch { 0x0042BD38, 400, std::vector<int> { 0xA4, 0x0, 0x208, 0x0, 0x164, 0x88 } },
-		Synthesia::MemoryFetch { 0x0042BD38, 400, std::vector<int> { 0xA4, 0x0, 0xD8, 0x19C, 0x0, 0x1C4 } },
-		Synthesia::MemoryFetch { 0x0042BD38, 400, std::vector<int> { 0xA4, 0x0, 0x1A4, 0x33C, 0x1A8, 0xC8 } },
+		Synthesia::MemoryFetch { 0x005134B8, std::vector<int> { 0x168, 0x8, 0x8, 0x4C0, 0x70, 0xB8 } },
+		Synthesia::MemoryFetch { 0x0042BD38, std::vector<int> { 0x30, 0xA4, 0x0, 0x1C4, 0x168, 0xE4, 0x8 } },
+		Synthesia::MemoryFetch { 0x0042BD38, std::vector<int> { 0xA4, 0x0, 0xA8, 0x144, 0x4, 0x140 } },
+		Synthesia::MemoryFetch { 0x0042BD34},
+		Synthesia::MemoryFetch { 0x0042BD38, std::vector<int> { 0xA4, 0x0, 0x208, 0x0, 0x164, 0x88 } },
+		Synthesia::MemoryFetch { 0x0042BD38, std::vector<int> { 0xA4, 0x0, 0xD8, 0x19C, 0x0, 0x1C4 } },
+		Synthesia::MemoryFetch { 0x0042BD38, std::vector<int> { 0xA4, 0x0, 0x1A4, 0x33C, 0x1A8, 0xC8 } },
 	};
 
 	static std::vector<MemoryMap> MEMORY_MAPPING
 	{
-		v10p6,
-		v10p7,
 		v10p9
 	};
 
