@@ -164,8 +164,8 @@ int Sniffer::GetCurrentInformation(PEProcess& process)
 {
     try 
     {
-        LPVOID menuAddress = process.ReadMemoryAddressChain(memoryMapping.menu.address, memoryMapping.menu.offsets.data(), memoryMapping.menu.offsets.size());
-        std::string menuAddressStr = process.ReadMemoryString(menuAddress, 16);
+        std::string menuAddressStr = process.ReadMemoryString(memoryMapping.menu.address, 16);
+
         if (Util::ValidString(menuAddressStr))
         {
             MenuType menuType = Util::SafeMapRetrieval(Synthesia::MENU_MAPPING, menuAddressStr, MenuType::UNKNOWN);
@@ -174,7 +174,7 @@ int Sniffer::GetCurrentInformation(PEProcess& process)
 
             if (songPausedAddress != 0x0)
             {
-                std::string songPausedStr = ""; // process.ReadMemoryString(songPausedAddress, 12, nullptr, memoryMapping.songPaused.offsets.data());
+                std::string songPausedStr = process.ReadMemoryString(songPausedAddress, 12);
 
                 if (songPausedStr == "Song Paused")
                 {
